@@ -1,0 +1,425 @@
+{
+  "PreBoss": {
+    "potion": "Lesser",
+    "powerups": ["LifeCrystal", "ManaCrystal"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Gold/Platinum",
+        "weapons": ["**Starfury**", "Yateveo Bloom", "Blade of Grass", "Enchanted Sword"],
+        "equipment": ["Fungal Symbiote", "Feral Claws", "Cloud in a Bottle", "Frog Leg", "Hermes Boots"],
+        "extra": {
+          "Optional Equipment": ["Rover Drive", "Unstable Prism", "Luxor's Gift"]
+        }
+      },
+      "Ranger": {
+        "armor": "Desert Prowler/Fossil",
+        "weapons": ["**Minishark**", "Opal Striker", "Blood Rain Bow/Gold Bow", "Spark Spreader"],
+        "equipment": ["Shark Tooth Necklace", "Luxor's Gift", "Frog Leg", "Cloud in a Bottle", "Hermes Boots"],
+        "extra": {
+          "Ammo": ["Silver Bullets", "Flash Round", "Frostburn Bullets", "Jester Arrows"]
+        }
+      },
+      "Mage": {
+        "armor": "Jungle",
+        "weapons": ["**Diamond Staff**", "Mana Rose", "Harvest Staff", "**Frost Bolt**"],
+        "equipment": ["Mana Jelly", "Mana Flower", "Band of Starpower/Frog Leg", "Cloud in a Bottle", "Hermes Boots"],
+        "extra": {
+          "Mana Potion": ["Lesser"]
+        }
+      }
+    }
+  },
+
+  "PreEvil": {
+    "potion": "Normal",
+    "powerups": ["MushroomPlasmaRoot"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Molten/Victide",
+        "weapons": ["**Bladecrest Oathsword**", "Old Lord Oathsword", "Riptide/Seashine Sword", "Fiery Greatsword/Flamarang"],
+        "equipment": ["Fungal Symbiote", "Feral Claws", "Lightning Boots", "Cloud in a Balloon", "Shield of Cthulu"],
+        "extra": {
+          "Optional Equipment": ["Aero Stone", "Brain of Confusion", "Worm Scarf"]
+        }
+      },
+      "Ranger": {
+        "armor": "Victide/Fossil",
+        "weapons": ["**Star Cannon**", "Fungicide", "Molten Fury/Barinade", "Storm Surge"],
+        "equipment": ["Luxor's Gift/Rusty Medallion", "Frog Leg", "Lightning Boots", "Cloud in a Balloon", "Shield of Cthulu"],
+        "extra": {
+          "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows", "Fallen Stars"]
+        }
+      }
+    }
+  },
+
+  "PreSkeletron": {
+    "potion": "Normal",
+    "loadouts": {
+      "Melee": {
+        "armor": "Aerospec/Molten",
+        "weapons": ["**Broken Biome Blade**", "Wind Blade/Goldplume Spear", "Bladecrest/Old Lord Oathsword", "Fiery Greatsword/Flamarang"],
+        "equipment": ["Bloody Worm Tooth", "Feral Claws", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
+        "extra": {
+          "Optional Equipment": ["Stinger Necklace", "Brain of Confusion", "Worm Scarf"]
+        }
+      },
+      "Ranger": {
+        "armor": "Aerospec",
+        "weapons": ["**Star Cannon**", "Aquashard Shotgun", "Galeforce/The Bee's Knees", "Dragoon Drizzlefish"],
+        "equipment": ["Luxor's Gift/Rusty Medallion", "Frog Leg", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
+        "extra": {
+          "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows", "Fallen Stars"]
+        }
+      }
+    }
+  },
+
+  "PreWall": {
+    "potion": "Normal",
+    "powerups": ["ElectrolyteGelPack"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Statigel",
+        "weapons": ["**Broken Biome Blade**/**Fractured Ark**", "Night's Edge", "Ball O' Fugu", "Gelitic Blade"],
+        "equipment": ["Bloody Worm Tooth", "Obsidian Shield", "Terraspark Boots", "Skyline Wings", "Counter Scarf"],
+        "extra": {
+          "Optional Equipment": ["Bundle of Balloons", "Feral Claws", "Charm of Myths"]
+        }
+      },
+      "Ranger": {
+        "armor": "Statigel",
+        "weapons": ["**Goobow**/**Overloaded Blaster**", "Hellwing/Lunarian Bow", "**Archerfish**", "Flurrystorm Cannon/Phoenix Blaster"],
+        "equipment": ["Luxor's Gift/Rusty Medallion", "Aero Stone/Charm of Myths", "Terraspark Boots", "Skyline Wings", "Shield of Cthulu"],
+        "extra": {
+          "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows"]
+        }
+      }
+    }
+  },
+
+  "PreMech": {
+    "potion": "Greater",
+    "powerups": ["DemonHeart", "HermitBox", "LifeFruit", "CometShard"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Palladium/Cobalt",
+        "weapons": ["**True Caustic Edge**", "Roxcalibur", "Earthen Pike/Aftershock", "Bladetongue/Clam Crusher"],
+        "equipment": ["Bloody Worm Scarf", "Counter Scarf", "Warrior Emblem", "Power Glove", "Fairy Wings", "Terraspark Boots"],
+        "extra": {
+          "Optional Equipment": ["Frost Flare (Post-Cryogen)", "Soul of Cryogen (Post-Cryogen)", "Ankh Charm"]
+        }
+      },
+      "Ranger": {
+        "armor": "Cobalt/Palladium",
+        "weapons": ["**Slag Magnum**", "**Daedalus Stormbow**", "Effluvium Bow (Post-Cryogen)", "Butcher/Uzi"],
+        "equipment": [
+          "Stalker's Quiver/Amalgamated Brain",
+          "Ranger Emblem",
+          "Grand Gelatin",
+          "Shield of Cthulu",
+          "Fairy Wings",
+          "Terraspark Boots"
+        ],
+        "extra": {
+          "Ammo": ["Ichor Bullets", "Crystal Bullets", "Napalm Arrows", "Cursed Arrows"]
+        }
+      }
+    }
+  },
+
+  "PrePlantera": {
+    "potion": "Greater",
+    "powerups": ["BloodOrange"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Daedalus*/Hallowed",
+        "weapons": ["**Biome Blade**", "True Night's Edge", "Darklight Greatsword", "Pwnagehammer"],
+        "equipment": ["Bloody Worm Scarf", "Ornate Shield*/Evasion Scarf", "Mechanical Glove", "Ankh Shield", "Bat Wings/MOAB", "Angel Treads"],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Daedalus/Chlorophyte",
+        "weapons": ["**Sea's Searing**", "Chlorophyte Shotbow/Arbalest", "Adamantite Particle Accelerator/Titanium Railgun", "Darkecho Greatbow"],
+        "equipment": ["Stalker's Quiver/Avenger Emblem", "Ranger Emblem", "Ankh Shield", "Ornate Shield", "Bat Wings/MOAB", "Angel Treads"],
+        "extra": {
+          "Ammo": ["Chlorophyte Bullets", "Crystal Bullets", "Napalm Arrows", "Arctic Arrows"]
+        }
+      }
+    }
+  },
+
+  "PreGolem": {
+    "potion": "Greater",
+    "powerups": ["StarlightFuelCell"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Reaver/Daedalus",
+        "weapons": ["**Ark of the Ancients**", "**Terra Blade**", "Comet Quasher", "Tyrant Yharim's Ultisword"],
+        "equipment": [
+          "Bloody Worm Scarf",
+          "Asgard's Valor/Evasion Scarf",
+          "Mechanical Glove",
+          "Frozen/Hero Shield",
+          "Mothron Wings/Aureate Booster",
+          "Angel Treads"
+        ],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Shroomite",
+        "weapons": ["**Megalodon**", "Snowman Cannon", "Aurora Blazer", "Blossom Flux"],
+        "equipment": [
+          "Deadshot Brooch",
+          "Stalker's Quiver/Ranger Emblem",
+          "Sand Shark Tooth Necklace",
+          "Asgard's Valor",
+          "Hoverboard",
+          "Angel Treads"
+        ],
+        "extra": {
+          "Ammo": ["Terra Bullets", "Mini Nuke I", "Terra Arrows"]
+        }
+      }
+    }
+  },
+
+  "PreCultist": {
+    "potion": "Greater",
+    "powerups": ["MiracleFruit", "InfernalBlood"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Beetle/Hydrothermic",
+        "weapons": ["**Flairon**/**Briny Baron**", "Aegis Blade/Soul Harvester", "Fallen Paladin's Hammer", "Omniblade/Starlight"],
+        "equipment": ["Bloody Worm Scarf", "Asgard's Valor", "Celestial Shell", "Fire Gauntlet", "Fishron Wings/Hadal Mantle", "Angel Treads"],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Plague Reaper",
+        "weapons": ["**Tsunami**/**Eventide**", "Continental Bow", "**Gauss Rifle**/**Realm Ravager**", "Blight Spewer/The Hive"],
+        "equipment": ["Stalker's Quiver/Alchemical Flask", "Recon Scope", "Deadshot Brooch", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
+        "extra": {
+          "Ammo": ["Hyperius Bullets", "Acid Round", "Mini Nuke I", "Terra Arrows"]
+        }
+      }
+    }
+  },
+
+  "PreMoonLord": {
+    "potion": "Super",
+    "powerups": ["EtherealCore"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Beetle/Hydrothermic",
+        "weapons": ["**True Biome Blade**", "Briny Baron/Entropic Claymore", "Solar Eruption/Daybreak", "Astral Blade*"],
+        "equipment": ["Bloody Worm Scarf", "Asgard's Valor", "Celestial Shell", "Fire Gauntlet", "Fishron Wings", "Angel Treads", "Hide of Astrum Deus*"],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Plague Reaper",
+        "weapons": ["**Astral Blaster**/**Vortex Popper\\***", "God's Bellows/Scorpio", "Phantasm", "Spectralstorm Cannon"],
+        "equipment": ["Stalker's Quiver/Plague Hive", "Recon Scope", "Deadshot Brooch", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
+        "extra": {
+          "Ammo": ["Hyperius Bullets", "Chlorophyte Bullets*", "Mini Nuke I", "Terra Arrows"]
+        }
+      }
+    }
+  },
+
+  "PreProvidence": {
+    "potion": "Super",
+    "powerups": ["CelestialOnion", "RedLightningContainer"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Solar Flare",
+        "weapons": ["**Ark of the Elements**", "Stellar Striker", "Stellar Contempt", "Elemental Lance"],
+        "equipment": ["Bloody Worm Scarf", "Asgard's Valor", "Celestial Shell", "Fire Gauntlet", "Warbanner of the Sun", "The Community", "Seraph Tracers"],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Vortex",
+        "weapons": ["**Clockwork Bow**/**Planetary Annihilation**", "**Disseminator**", "Onyx Chain Blaster", "Prideful Hunter's Planar Ripper"],
+        "equipment": [
+          "Stalker's Quiver/Destroyer Emblem",
+          "Recon Scope",
+          "Deadshot Brooch",
+          "Asgard's Valor",
+          "Dynamo Stem Cells/Absorber",
+          "The Community",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Ammo": ["Hyperius Bullets", "Luminite Bullets", "Holy Fire Bullets", "Luminite/Elysian Arrows"]
+        }
+      }
+    }
+  },
+
+  "PrePolterghast": {
+    "potion": "Supreme",
+    "powerups": ["Elderberry"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Terragon",
+        "weapons": ["**Terratomere**/**Galactus Blade**", "Ark of the Elements", "Tru Tyrant's Ultisword", "Mourningstar/Pulse Dragon"],
+        "equipment": ["Yharim's Insignia", "Badge of Bravery", "Celestial Shell", "Fire Gauntlet", "Warbanner of the Sun", "Elysian Aegis", "Seraph Tracers"],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Terragon",
+        "weapons": ["**Angelic Shotgun**", "Seadragon/Blissful Bombardier", "Arterial Assault", "Pristine Fury/Blood Boilder"],
+        "equipment": [
+          "Stalker's Quiver/Destroyer Emblem",
+          "Recon Scope",
+          "Deadshot Brooch",
+          "Elysian Aegis",
+          "Dynamo Stem Cells/Absorber",
+          "The Community",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Ammo": ["Bloodfire Bullets", "Bloodfire Arrows", "Holy Fire Bullets", "Mini Nuke I"]
+        }
+      }
+    }
+  },
+
+  "PreDevourer": {
+    "potion": "Supreme",
+    "powerups": ["Ectoheart", "PhantomHeart"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Bloodflare",
+        "weapons": ["**Terror Blade**", "Soul Edge", "Banshee Hook", "Crescent Moon"],
+        "equipment": ["Yharim's Insignia", "Badge of Bravery", "Affliction", "Fire Gauntlet", "Warbanner of the Sun", "Elysian Aegis", "Seraph Tracers"],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Bloodflare",
+        "weapons": ["Fetid Emesis", "Monsoon", "**Sulphuric Acid Cannon**", "Halley's Inferno"],
+        "equipment": [
+          "Stalker's Quiver/The Community",
+          "Recon Scope",
+          "Deadshot Brooch",
+          "Elysian Aegis",
+          "Reaper Tooth Necklace",
+          "Affliction",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Ammo": ["Bloodfire Bullets", "Bloodfire Arrows", "Holy Fire Bullets"]
+        }
+      }
+    }
+  },
+
+  "PreYharon": {
+    "potion": "Omega",
+    "loadouts": {
+      "Melee": {
+        "armor": "God Slayer",
+        "weapons": ["Galaxia", "Greatsword of Blah", "Excelsus", "Empyrean Knives"],
+        "equipment": [
+          "Elemental Gauntlet",
+          "Dark Sun Ring",
+          "Asgardian Aegis",
+          "Warbanner of the Sun",
+          "The Sponge/Rampart of Deitites",
+          "Core of the Blood God",
+          "Elysian Tracers"
+        ],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "God Slayer",
+        "weapons": ["**SDFMG**", "Onyxia", "**Alluvion**/**Phangasm**", "Scorched Earth/Norfleet"],
+        "equipment": [
+          "Elemental Quiver",
+          "Recon Scope",
+          "Core of the Blood God",
+          "Dimensional Soul Artifact",
+          "Reaper Tooth Necklace",
+          "Asgardian Aegis",
+          "Elysian Tracers"
+        ],
+        "extra": {
+          "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
+        }
+      }
+    }
+  },
+
+  "PreDraedon": {
+    "potion": "Omega",
+    "powerups": ["Dragonfruit"],
+    "loadouts": {
+      "Melee": {
+        "armor": "Auric Tesla",
+        "weapons": ["Ark of the Cosmos", "Murasama", "Dragon Rage", "Ataraxia"],
+        "equipment": [
+          "Elemental Gauntlet",
+          "Yharim's Gift",
+          "Asgardian Aegis",
+          "Warbanner of the Sun",
+          "The Sponge/Rampart of Deities",
+          "Dark Sun Ring",
+          "Celestial Tracers"
+        ],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Auric Tesla",
+        "weapons": ["**Minigun**/**Dragon's Breath**", "Drataliornus", "Chicken Cannon", "Photoviscerator (Post-Exo Mechs)"],
+        "equipment": [
+          "Elemental Quiver",
+          "Recon Scope",
+          "Core of the Blood God/Affliction",
+          "Yharim's Gift",
+          "Reaper Tooth Necklace",
+          "Asgardian Aegis",
+          "Celestial Tracers"
+        ],
+        "extra": {
+          "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
+        }
+      }
+    }
+  },
+
+  "Endgame": {
+    "potion": "Omega",
+    "loadouts": {
+      "Melee": {
+        "armor": "Demonshade",
+        "weapons": ["Elemental Excalibur", "Earth", "Illustrious Knives", "Triactis' True Paladinian Mage-Hammer of Might"],
+        "equipment": [
+          "Elemental Gauntlet",
+          "Yharim's Gift",
+          "Asgardian Aegis",
+          "Warbanner of the Sun",
+          "Shattered Community",
+          "Dark Sun Ring",
+          "Celestial Tracers"
+        ],
+        "extra": {}
+      },
+      "Ranger": {
+        "armor": "Demonshade",
+        "weapons": ["**Svantechnical**", "**Contagion**", "Voidragon", "Halibut Cannon/Soma Prime"],
+        "equipment": [
+          "Elemental Quiver",
+          "Recon Scope",
+          "Dimensional Soul Artifact",
+          "Shattered Community",
+          "Yharim's Gift",
+          "Asgardian Aegis",
+          "Celestial Tracers"
+        ],
+        "extra": {
+          "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
+        }
+      }
+    }
+  }
+}
+
