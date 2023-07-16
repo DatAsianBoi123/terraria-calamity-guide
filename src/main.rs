@@ -1,9 +1,11 @@
-use std::{env, sync::Arc};
+use std::sync::Arc;
 
 use data::LoadoutData;
 use poise::{samples::register_globally, FrameworkOptions, command, serenity_prelude::{Timestamp, Color}};
 use serenity::prelude::GatewayIntents;
-use dotenv::dotenv;
+
+use shuttle_poise::ShuttlePoise;
+use shuttle_secrets::SecretStore;
 
 use crate::data::{CalamityClass, Stage};
 
@@ -140,9 +142,9 @@ async fn view_loadout(
     Ok(())
 }
 
-#[tokio::main]
-async fn main() {
-    dotenv().ok();
+#[shuttle_runtime::main]
+async fn poise(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> ShuttlePoise<LoadoutData, Error> {
+    let token = secret_store.get("TOKEN").expect("TOKEN not found");
 
     let framework = poise::Framework::builder()
         .options(FrameworkOptions {
@@ -153,7 +155,7 @@ async fn main() {
             ],
             ..Default::default()
         })
-        .token(env::var("token").expect("token"))
+        .token(token)
         .intents(GatewayIntents::GUILDS)
         .setup(|ctx, ready, framework| {
             Box::pin(async move {
@@ -162,8 +164,8 @@ async fn main() {
                 println!("ready! logged in as {}", ready.user.tag());
                 Ok(data::load_data())
             })
-        });
+        }).build().await.map_err(shuttle_runtime::CustomError::new)?;
 
-    framework.run().await.unwrap();
+    Ok(framework.into())
 }
 
