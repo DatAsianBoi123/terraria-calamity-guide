@@ -1156,7 +1156,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "terraria_bot"
+name = "terraria-bot"
 version = "0.1.0"
 dependencies = [
  "convert_case",
