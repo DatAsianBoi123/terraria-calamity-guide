@@ -1,7 +1,7 @@
 use std::{sync::Arc, path::PathBuf};
 
 use data::LoadoutData;
-use poise::{samples::register_globally, FrameworkOptions, command, serenity_prelude::{Timestamp, Color}};
+use poise::{samples::register_globally, FrameworkOptions, command, serenity_prelude::{Timestamp, Color, Activity, OnlineStatus}};
 use serenity::prelude::GatewayIntents;
 
 use shuttle_poise::ShuttlePoise;
@@ -163,6 +163,7 @@ async fn poise(
         .setup(|ctx, ready, framework| {
             Box::pin(async move {
                 register_globally(ctx, &framework.options().commands).await?;
+                ctx.set_presence(Some(Activity::playing("TModLoader")), OnlineStatus::Online).await;
                 println!("registered commands");
                 println!("ready! logged in as {}", ready.user.tag());
                 Ok(data::load_data(static_folder))
