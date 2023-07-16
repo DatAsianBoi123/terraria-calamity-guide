@@ -1,5 +1,5 @@
 use core::fmt;
-use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display};
+use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display, path::PathBuf};
 
 use convert_case::{Casing, Case};
 use poise::ChoiceParameter;
@@ -157,7 +157,8 @@ impl Default for Loadout {
     }
 }
 
-pub fn load_data() -> LoadoutData {
-    serde_json::from_reader(BufReader::new(File::open("loadout_data.json").expect("exists"))).expect("valid json")
+pub fn load_data(mut buf: PathBuf) -> LoadoutData {
+    buf.push("loadout_data.json");
+    serde_json::from_reader(BufReader::new(File::open(buf).expect("exists"))).expect("valid json")
 }
 

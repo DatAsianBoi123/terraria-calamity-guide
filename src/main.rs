@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, path::PathBuf};
 
 use data::LoadoutData;
 use poise::{samples::register_globally, FrameworkOptions, command, serenity_prelude::{Timestamp, Color}};
@@ -143,7 +143,10 @@ async fn view_loadout(
 }
 
 #[shuttle_runtime::main]
-async fn poise(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> ShuttlePoise<LoadoutData, Error> {
+async fn poise(
+    #[shuttle_secrets::Secrets] secret_store: SecretStore,
+    #[shuttle_static_folder::StaticFolder] static_folder: PathBuf,
+) -> ShuttlePoise<LoadoutData, Error> {
     let token = secret_store.get("TOKEN").expect("TOKEN not found");
 
     let framework = poise::Framework::builder()
@@ -162,7 +165,7 @@ async fn poise(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> Shuttle
                 register_globally(ctx, &framework.options().commands).await?;
                 println!("registered commands");
                 println!("ready! logged in as {}", ready.user.tag());
-                Ok(data::load_data())
+                Ok(data::load_data(static_folder))
             })
         }).build().await.map_err(shuttle_runtime::CustomError::new)?;
 

@@ -15,6 +15,7 @@ convert_case = "0.6.0"
 shuttle-poise = "0.21.0"
 shuttle-runtime = "0.21.0"
 shuttle-secrets = "0.21.0"
+shuttle-static-folder = "0.21.0"
 
 [dependencies.serenity]
 default-features = false
