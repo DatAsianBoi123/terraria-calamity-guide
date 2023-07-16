@@ -24,7 +24,7 @@
         "weapons": ["**Diamond Staff**", "Mana Rose", "Harvest Staff", "**Frost Bolt**"],
         "equipment": ["Mana Jelly", "Mana Flower", "Band of Starpower/Frog Leg", "Cloud in a Bottle", "Hermes Boots"],
         "extra": {
-          "Mana Potion": ["Lesser"]
+          "Mana Potion": ["Lesser Mana Potion"]
         }
       }
     }
@@ -49,6 +49,14 @@
         "extra": {
           "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows", "Fallen Stars"]
         }
+      },
+      "Mage": {
+        "armor": "Jungle/Space",
+        "weapons": ["**Acid Gun**/**Space Gun**", "**Flare Bolt**", "Demon Scythe", "Hellwing Staff"],
+        "equipment": ["Magic Cuffs", "Mana Flower", "Shield of Cthulu", "Cloud in a Balloon", "Lightning Boots"],
+        "extra": {
+          "Mana Potion": ["Normal Mana Potion"]
+        }
       }
     }
   },
@@ -70,6 +78,14 @@
         "equipment": ["Luxor's Gift/Rusty Medallion", "Frog Leg", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
         "extra": {
           "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows", "Fallen Stars"]
+        }
+      },
+      "Mage": {
+        "armor": "Aerospec",
+        "weapons": ["**Tradewinds**", "Hellwing Staff/Bee Gun", "Shaderain Staff/Blood Bath", "Flare Bolt/Demon Scythe"],
+        "equipment": ["Magic Cuffs", "Mana Flower", "Shield of Cthulu", "Bundle of Balloons", "Frostspark Boots"],
+        "extra": {
+          "Mana Potion": ["Normal Mana Potion"]
         }
       }
     }
@@ -93,6 +109,14 @@
         "equipment": ["Luxor's Gift/Rusty Medallion", "Aero Stone/Charm of Myths", "Terraspark Boots", "Skyline Wings", "Shield of Cthulu"],
         "extra": {
           "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows"]
+        }
+      },
+      "Mage": {
+        "armor": "Statigel",
+        "weapons": ["**Night's Ray**/**Carnage Ray**", "Abyssal Tome/Eldritch Tome", "**Black Anurian**", "Abyss Shocker"],
+        "equipment": ["Magic Cuffs", "Mana Flower/Mana Polarizer", "Shield of Cthulu", "Skyline Wings", "Terraspark Boots"],
+        "extra": {
+          "Mana Potion": ["Normal Mana Potion"]
         }
       }
     }
@@ -124,6 +148,19 @@
         "extra": {
           "Ammo": ["Ichor Bullets", "Crystal Bullets", "Napalm Arrows", "Cursed Arrows"]
         }
+      },
+      "Mage": {
+        "armor": "Palladium/Cobalt",
+        "weapons": [
+          "**Frigidflash Bolt**/**Poseidon**",
+          "**Sky Fracture**/**Crystal Serpent**",
+          "Icicle Trident/Snowstorm Staff (Post-Cryogen)",
+          "*Golden Shower*/*Clinger Staff*/*Nimbus Rod*"
+        ],
+        "equipment": ["Celestial Cuffs", "Sorcerer Emblem", "Magnet Flower/Mana Polarizer", "Shield of Cthulu", "Fairy Wings", "Terraspark Boots"],
+        "extra": {
+          "Mana Potion": ["Super Mana Potion"]
+        }
       }
     }
   },
@@ -144,6 +181,14 @@
         "equipment": ["Stalker's Quiver/Avenger Emblem", "Ranger Emblem", "Ankh Shield", "Ornate Shield", "Bat Wings/MOAB", "Angel Treads"],
         "extra": {
           "Ammo": ["Chlorophyte Bullets", "Crystal Bullets", "Napalm Arrows", "Arctic Arrows"]
+        }
+      },
+      "Mage": {
+        "armor": "Daedalus/Hallowed",
+        "weapons": ["**Brimrose Staff**", "**SHPC**", "Valkyrie Ray", "Ion Blaster/Slithering Eels"],
+        "equipment": ["Celestial Emblem", "Permafrost's Concoction", "Magnet Flower/Sorcerer Emblem", "Ornate Shield", "Bat Wings", "Angel Treads"],
+        "extra": {
+          "Mana Potion": ["Super Mana Potion"]
         }
       }
     }
@@ -180,6 +225,14 @@
         "extra": {
           "Ammo": ["Terra Bullets", "Mini Nuke I", "Terra Arrows"]
         }
+      },
+      "Mage": {
+        "armor": "Brimflame",
+        "weapons": ["**Terra Ray**", "**Astralachnea Staff**/**Atlantis**", "**Tears of Heaven**", "**Spectre Staff**"],
+        "equipment": ["Celestial Emblem", "Chaos Stone", "Magnet Flower/Sorcerer Emblem", "Asgard's Valor", "Mothron Wings", "Angel Treads"],
+        "extra": {
+          "Mana Potion": ["Super Mana Potion", "Aureus Cell"]
+        }
       }
     }
   },
@@ -200,6 +253,14 @@
         "equipment": ["Stalker's Quiver/Alchemical Flask", "Recon Scope", "Deadshot Brooch", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
         "extra": {
           "Ammo": ["Hyperius Bullets", "Acid Round", "Mini Nuke I", "Terra Arrows"]
+        }
+      },
+      "Mage": {
+        "armor": "Hydrothermic",
+        "weapons": ["**Razordblade Typhoon**/**Forbidden Sun**", "Betsy's Wrath/Nightglow", "**Plague Staff**", "Gatling Laser"],
+        "equipment": ["Sigil of Calamitas", "Magnet Flower/Sorcerer Emblem", "The Community", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
+        "extra": {
+          "Mana Potion": ["Super Mana Potion", "Aureus Cell"]
         }
       }
     }
@@ -222,6 +283,14 @@
         "extra": {
           "Ammo": ["Hyperius Bullets", "Chlorophyte Bullets*", "Mini Nuke I", "Terra Arrows"]
         }
+      },
+      "Mage": {
+        "armor": "Hydrothermic",
+        "weapons": ["**Lazhar**", "Nebula Arcanum/Nebula Blaze", "The Swarmer", "**Plauge Staff**"],
+        "equipment": ["Sigil of Calamtias", "Magnet Flower/Sorcerer Emblem", "The Community", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
+        "extra": {
+          "Mana Potion": ["Super Mana Potion", "Aureus Cells"]
+        }
       }
     }
   },
@@ -233,7 +302,15 @@
       "Melee": {
         "armor": "Solar Flare",
         "weapons": ["**Ark of the Elements**", "Stellar Striker", "Stellar Contempt", "Elemental Lance"],
-        "equipment": ["Bloody Worm Scarf", "Asgard's Valor", "Celestial Shell", "Fire Gauntlet", "Warbanner of the Sun", "The Community", "Seraph Tracers"],
+        "equipment": [
+          "Bloody Worm Scarf",
+          "Asgard's Valor",
+          "Celestial Shell",
+          "Fire Gauntlet",
+          "Warbanner of the Sun",
+          "The Community",
+          "Seraph Tracers"
+        ],
         "extra": {}
       },
       "Ranger": {
@@ -250,6 +327,22 @@
         ],
         "extra": {
           "Ammo": ["Hyperius Bullets", "Luminite Bullets", "Holy Fire Bullets", "Luminite/Elysian Arrows"]
+        }
+      },
+      "Mage": {
+        "armor": "Nebula",
+        "weapons": ["**Elemental Ray**", "**Effervescence**", "Nuclear Fury", "Last Prism"],
+        "equipment": [
+          "Sigil of Calamtias",
+          "Magnet Flower/Sorcerer Emblem",
+          "Soaring Insignia",
+          "The Absorber",
+          "Asgard's Valor",
+          "The Community",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Mana Potion": ["Surpeme Mana Potion", "Aureus Cell"]
         }
       }
     }
@@ -280,6 +373,22 @@
         "extra": {
           "Ammo": ["Bloodfire Bullets", "Bloodfire Arrows", "Holy Fire Bullets", "Mini Nuke I"]
         }
+      },
+      "Mage": {
+        "armor": "Prismatic",
+        "weapons": ["**Elemental Ray**/**Purge Guzzler**", "Divine Retribution", "Viscera", "**Aether's Whisper**/**Thunderstorm**"],
+        "equipment": [
+          "Sigil of Calamitas",
+          "Magnet Flower/Sorcerer Emblem",
+          "Soaring Insignia",
+          "The Absorber",
+          "Elysian Aegis",
+          "The Community",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
+        }
       }
     }
   },
@@ -308,6 +417,22 @@
         ],
         "extra": {
           "Ammo": ["Bloodfire Bullets", "Bloodfire Arrows", "Holy Fire Bullets"]
+        }
+      },
+      "Mage": {
+        "armor": "Bloodflare",
+        "weapons": ["Phantasmal Fury", "**Dark Spark**", "Venusian Trident", "Vitriolic Viper"],
+        "equipment": [
+          "Sigil of Calamitas",
+          "Magnet Flower/Sorcerer Emblem",
+          "The Community",
+          "Reaper Tooth Necklace",
+          "Elysian Aegis",
+          "Affliction",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
         }
       }
     }
@@ -344,6 +469,22 @@
         ],
         "extra": {
           "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
+        }
+      },
+      "Mage": {
+        "armor": "Silva",
+        "weapons": ["**Event Horizon**", "Deathhail Staff", "**Voltaic Climax**", "Primordial Ancient/Recitation of the Beast"],
+        "equipment": [
+          "Ethereal Talisman",
+          "Asgardian Aegis",
+          "Core of the Blood God",
+          "Reaper Tooth Necklace",
+          "The Sponge",
+          "Affliction",
+          "Elysian Tracers"
+        ],
+        "extra": {
+          "Mana Potion": ["Supreme Mana Potion", "Aureus Cells"]
         }
       }
     }
@@ -382,6 +523,22 @@
         "extra": {
           "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
         }
+      },
+      "Mage": {
+        "armor": "Auric Tesla",
+        "weapons": ["Yharim's Crystal", "Helium Flash", "**Void Vortex**", "**Aetherflux Cannon**"],
+        "equipment": [
+          "Ethereal Talisman",
+          "Asgardian Aegis",
+          "Core of the Blood God",
+          "Yharim's Gift",
+          "The Sponge",
+          "Affliction/The Community",
+          "Celestial Tracers"
+        ],
+        "extra": {
+          "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
+        }
       }
     }
   },
@@ -417,6 +574,22 @@
         ],
         "extra": {
           "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
+        }
+      },
+      "Mage": {
+        "armor": "Demonshade",
+        "weapons": ["**The Dance of Light**", "**Fabstaff**", "Rainbow Party Cannon", "Eternity/Apotheosis"],
+        "equipment": [
+          "Ethereal Talisman",
+          "Asgardian Aegis",
+          "Shattered Community",
+          "Dimensional Soul Artifact",
+          "The Sponge",
+          "Yharim's Gift",
+          "Celestial Tracers"
+        ],
+        "extra": {
+          "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
         }
       }
     }
