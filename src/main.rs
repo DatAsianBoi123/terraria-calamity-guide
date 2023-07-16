@@ -5,6 +5,7 @@ use poise::{samples::register_globally, FrameworkOptions, command, serenity_prel
 use serenity::prelude::GatewayIntents;
 
 use shuttle_poise::ShuttlePoise;
+use shuttle_runtime::tracing::log::info;
 use shuttle_secrets::SecretStore;
 
 use crate::data::{CalamityClass, Stage};
@@ -164,8 +165,7 @@ async fn poise(
             Box::pin(async move {
                 register_globally(ctx, &framework.options().commands).await?;
                 ctx.set_presence(Some(Activity::playing("TModLoader")), OnlineStatus::Online).await;
-                println!("registered commands");
-                println!("ready! logged in as {}", ready.user.tag());
+                info!("ready! logged in as {}", ready.user.tag());
                 Ok(data::load_data(static_folder))
             })
         }).build().await.map_err(shuttle_runtime::CustomError::new)?;
