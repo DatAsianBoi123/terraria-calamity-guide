@@ -5,8 +5,9 @@ use poise::{samples::register_globally, FrameworkOptions, command, serenity_prel
 use serenity::prelude::GatewayIntents;
 
 use shuttle_poise::ShuttlePoise;
-use shuttle_runtime::tracing::log::info;
 use shuttle_secrets::SecretStore;
+
+use tracing::info;
 
 use crate::data::{CalamityClass, Stage};
 
