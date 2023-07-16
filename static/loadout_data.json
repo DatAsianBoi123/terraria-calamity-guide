@@ -26,6 +26,15 @@
         "extra": {
           "Mana Potion": ["Lesser Mana Potion"]
         }
+      },
+      "Summoner": {
+        "armor": "Wulfrum",
+        "weapons": ["**Belladonna Spirit Staff**", "Wulfrum Controller", "Sun Spirit Staff/Frost Blossom Staff", "Flinx Staff/Vampire Frog Staff"],
+        "equipment": ["Spirit Glyph", "Wulfrum Battery", "Rover Drive", "Cloud in a Bottle", "Hermes Boots"],
+        "extra": {
+          "Whip": ["Snapthorn"],
+          "Sentry": ["Squirrel Squire Staff"]
+        }
       }
     }
   },
@@ -57,6 +66,15 @@
         "extra": {
           "Mana Potion": ["Normal Mana Potion"]
         }
+      },
+      "Summoner": {
+        "armor": "Victide/Obsidian",
+        "weapons": ["**Imp Staff**", "Deathstare Rod", "Vile Feeder/Scab Ripper", "Cinder Blossom Staff"],
+        "equipment": ["Fungal Clump/Spirit Glyph", "Voltaic Jelly", "Lightning Boots", "Cloud in a Balloon", "Shield of Cthulu"],
+        "extra": {
+          "Whip": ["Snapthorn"],
+          "Sentry": ["Polyp Launcher"]
+        }
       }
     }
   },
@@ -86,6 +104,15 @@
         "equipment": ["Magic Cuffs", "Mana Flower", "Shield of Cthulu", "Bundle of Balloons", "Frostspark Boots"],
         "extra": {
           "Mana Potion": ["Normal Mana Potion"]
+        }
+      },
+      "Summoner": {
+        "armor": "Aerospec/Obsidian",
+        "weapons": ["**Imp Staff**", "Cinder Blossom Staff", "Dank Staff/Blood Clot Staff", "**Star Swallower Containment Unit**"],
+        "equipment": ["Pygmy Necklace/Spirit Glyph", "Voltaic Jelly", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
+        "extra": {
+          "Whip": ["Snapthorn"],
+          "Sentry": ["Ballista Rod"]
         }
       }
     }
@@ -117,6 +144,15 @@
         "equipment": ["Magic Cuffs", "Mana Flower/Mana Polarizer", "Shield of Cthulu", "Skyline Wings", "Terraspark Boots"],
         "extra": {
           "Mana Potion": ["Normal Mana Potion"]
+        }
+      },
+      "Summoner": {
+        "armor": "Statigel",
+        "weapons": ["**Eye of Night**/**Flesh of Infidelity**", "Slime Puppet Staff", "Corroslime Staff/Crimslime Staff", "Herring Staff"],
+        "equipment": ["Jelly-Charged Battery", "Spirit Glyph/Pygmy Necklace", "Terraspark Boots", "Skyline Wings", "Shield of Cthulu"],
+        "extra": {
+          "Whip": ["Spinal Tap"],
+          "Sentry": ["Houndius Shootius"]
         }
       }
     }
@@ -161,6 +197,15 @@
         "extra": {
           "Mana Potion": ["Super Mana Potion"]
         }
+      },
+      "Summoner": {
+        "armor": "Spider",
+        "weapons": ["**Ancient Ice Chunk**/**Blade Staff**", "Shellfish Staff/Caustic Staff", "Black Hawk Remote", "**Sanguine Staff**"],
+        "equipment": ["Jelly-Charged Battery", "The First Shadowflame", "Summoner Emblem", "Shield of Cthulu", "Fairy Wings", "Terraspark Boots"],
+        "extra": {
+          "Whip": ["Firecracker"],
+          "Sentry": ["Queen Spider Staff"]
+        }
       }
     }
   },
@@ -189,6 +234,15 @@
         "equipment": ["Celestial Emblem", "Permafrost's Concoction", "Magnet Flower/Sorcerer Emblem", "Ornate Shield", "Bat Wings", "Angel Treads"],
         "extra": {
           "Mana Potion": ["Super Mana Potion"]
+        }
+      },
+      "Summoner": {
+        "armor": "Daedalus/Hallowed",
+        "weapons": ["**Mounted Scanner**", "Dormant Brimseeker", "Sun God Staff", "**Daedalus Golem Staff**/**Sanguine Staff**"],
+        "equipment": ["Jelly-Charged Battery", "Hallowed Rune", "Nuclear Rod", "Ornate Shield", "Bat Wings", "Angel Treads"],
+        "extra": {
+          "Whip": ["Durendal"],
+          "Sentry": ["Cryogenic Staff"]
         }
       }
     }
@@ -233,6 +287,20 @@
         "extra": {
           "Mana Potion": ["Super Mana Potion", "Aureus Cell"]
         }
+      },
+      "Summoner": {
+        "armor": "Spooky/Fathom Swarmer",
+        "weapons": [
+          "**Raven Staff**/**Sanguine Staff**",
+          "**Mounted Scanner**/**Sand Sharknado Staff**",
+          "Plantation Staff/Gastric Belcher Staff",
+          "*Caustic Staff*"
+        ],
+        "equipment": ["Statis' Blessing", "Papyrus Scarab", "Starbuster Core", "Asgard's Valor", "Spooky Wings", "Angel Treads"],
+        "extra": {
+          "Whip": ["Dark Harvest"],
+          "Sentry": ["Hive Pod"]
+        }
       }
     }
   },
@@ -262,6 +330,23 @@
         "extra": {
           "Mana Potion": ["Super Mana Potion", "Aureus Cell"]
         }
+      },
+      "Summoner": {
+        "armor": "Plaguebringer",
+        "weapons": ["**Terraprisma**", "Infected Remote", "Wither Blossoms Staff", "Xeno Staff/Resurrection Butterfly"],
+        "equipment": [
+          "Statis' Blessing",
+          "Star-Tainted Generator",
+          "The Community/Soaring Insignia",
+          "Sentry Accessory*",
+          "Fishron Wings",
+          "Angel Treads"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Spikecrag Staff"],
+          "Sentry Accessory*": ["Squire's Shield", "Apprentice's Scarf", "Huntress's Buckler", "Monk's Belt"]
+        }
       }
     }
   },
@@ -290,6 +375,22 @@
         "equipment": ["Sigil of Calamtias", "Magnet Flower/Sorcerer Emblem", "The Community", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
         "extra": {
           "Mana Potion": ["Super Mana Potion", "Aureus Cells"]
+        }
+      },
+      "Summoner": {
+        "armor": "Plaguebringer",
+        "weapons": ["**Terraprisma**", "Stardust Dragon Staff", "Godspawn Helix Staff", "Wither Blossoms Staff/Resurrection Butterfly"],
+        "equipment": [
+          "Statis' Curse",
+          "Star-Tainted Generator", 
+          "Heart of the Elements",
+          "The Community/Soaring Insignia",
+          "Fishron Wings",
+          "Angel Treads"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Spikecrag Staff"]
         }
       }
     }
@@ -344,6 +445,23 @@
         "extra": {
           "Mana Potion": ["Surpeme Mana Potion", "Aureus Cell"]
         }
+      },
+      "Summoner": {
+        "armor": "Stardust",
+        "weapons": ["**Elemental Axe**", "Flowers of Mortality", "Tactical Plague Engine", "**Terraprisma**"],
+        "equipment": [
+          "Statis' Curse",
+          "Star-Tainted Generator",
+          "Heart of the Elements",
+          "The Absorber",
+          "The Community",
+          "Asgard's Valor",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Energy Staff"]
+        }
       }
     }
   },
@@ -355,7 +473,15 @@
       "Melee": {
         "armor": "Terragon",
         "weapons": ["**Terratomere**/**Galactus Blade**", "Ark of the Elements", "Tru Tyrant's Ultisword", "Mourningstar/Pulse Dragon"],
-        "equipment": ["Yharim's Insignia", "Badge of Bravery", "Celestial Shell", "Fire Gauntlet", "Warbanner of the Sun", "Elysian Aegis", "Seraph Tracers"],
+        "equipment": [
+          "Yharim's Insignia",
+          "Badge of Bravery",
+          "Celestial Shell",
+          "Fire Gauntlet",
+          "Warbanner of the Sun",
+          "Elysian Aegis",
+          "Seraph Tracers"
+        ],
         "extra": {}
       },
       "Ranger": {
@@ -388,6 +514,23 @@
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
+        }
+      },
+      "Summoner": {
+        "armor": "Tarragon",
+        "weapons": ["**Cosmilamp**", "Dragonblood Disgorger", "Snake Eyes", "Void Concentration Staff"],
+        "equipment": [
+          "Stats' Curse",
+          "Star-Tainted Generator",
+          "Heart of the Elements",
+          "Profaned Soul Artifact",
+          "The Absorber",
+          "Asgard's Valor",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Guidelight of Oblivion"]
         }
       }
     }
@@ -433,6 +576,23 @@
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
+        }
+      },
+      "Summoner": {
+        "armor": "Bloodflare",
+        "weapons": ["**Ethereal Subjugator**", "**Sirius**", "Calamari's Lament", "Warlock's Moon Fist"],
+        "equipment": [
+          "Statis' Curse",
+          "Star-Tainted Generator",
+          "Phantomic Artifact",
+          "Mutated Truffle/Profaned Soul Artifact",
+          "The Absorber/Affliction",
+          "Asgard's Valor",
+          "Seraph Tracers"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Guidelight of Oblivion/Cadaverous Carrion"]
         }
       }
     }
@@ -485,6 +645,23 @@
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cells"]
+        }
+      },
+      "Summoner": {
+        "armor": "Fearmonger/Silva",
+        "weapons": ["**Staff of the Mechworm**", "**Saros Possession**", "Endo Hydra Staff/Corvid Harbinger Staff", "Pole Warper"],
+        "equipment": [
+          "Nucleogenesis",
+          "Dark Sun Ring",
+          "Profaned Soul Artifact",
+          "Core of the Blood God",
+          "The Sponge/Rampart of Deities",
+          "Asgardian Aegis",
+          "Elysian Tracers/Silva Wings"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Guidelight of Oblivion"]
         }
       }
     }
@@ -539,6 +716,23 @@
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
         }
+      },
+      "Summoner": {
+        "armor": "Auric Tesla",
+        "weapons": ["**Yharon's Kindle Staff\\***", "**Midnight Sun Beacon**", "Saros Possession", "Cosmic Immaterializer (Post-Exo Mechs)"],
+        "equipment": [
+          "Nucleogenesis",
+          "Dark Sun Ring",
+          "Godly Soul Artifact*/Profaned Soul Artifact",
+          "Core of the Blood God",
+          "The Sponge/Rampart of Deities",
+          "Asgardian Aegis",
+          "Celestial Tracers"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Guidelight of Oblivion"]
+        }
       }
     }
   },
@@ -590,6 +784,23 @@
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
+        }
+      },
+      "Summoner": {
+        "armor": "Demonshade",
+        "weapons": ["**Endogenesis**", "**Temporal Umbrella**", "Universe Splitter", "Metastasis/Cosmic Immaterializer"],
+        "equipment": [
+          "Nucleogenesis",
+          "Angelic Alliance",
+          "Profaned Soul Crystal/Shattered Community",
+          "Dark Sun Ring",
+          "The Sponge/Rampart of Deities",
+          "Asgardian Aegis",
+          "Celestial Tracers"
+        ],
+        "extra": {
+          "Whip": ["Kaleidoscope"],
+          "Sentry": ["Perdition"]
         }
       }
     }
