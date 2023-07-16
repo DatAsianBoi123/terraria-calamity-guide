@@ -111,7 +111,10 @@ async fn view_loadout(
 
         {
             let stage_data = stage_data.clone();
-            let loadout = stage_data.loadouts.get(&class).expect("class exists");
+            let loadout = if let Some(l) = stage_data.loadouts.get(&class) { l } else {
+                ctx.say("This class is currently under construction!").await?;
+                return Ok(())
+            };
 
             macro_rules! loadout_msg {
                 ($creator: expr) => {
