@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-poise = "0.5.5"
+poise = { version = "0.5.5", features = ["cache"] }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
 dotenv = "0.15.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -23,6 +23,7 @@ features = [
   "http",
   "model",
   "utils",
-  "rustls_backend"
+  "rustls_backend",
+  "cache"
 ]
 version = "0.11"

@@ -51,6 +51,24 @@ async fn ping(ctx: Context<'_>) -> Result {
     Ok(())
 }
 
+#[command(slash_command, description_localized("en-US", "Displays the help page"))]
+async fn help(ctx: Context<'_>) -> Result {
+    ctx.send(|m| {
+        m.embed(|e| {
+            e.title("Help")
+                .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or(String::new()))
+                .description("This bot is designed to help you on your next Calamity playthrough by showing you different loadouts from \
+                             various stages of progression. Additionally, you will also be given information on what permanent upgrades \
+                             and healing potions are available to you at that stage of the game. Here, try it out! </viewloadout:1128763839396204565>")
+                .footer(|f| f.text("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
+                .color(Color::DARK_GREEN)
+                .timestamp(Timestamp::now())
+        })
+    }).await?;
+
+    Ok(())
+}
+
 #[command(
     slash_command,
     description_localized("en-US", "Views the recommended loadout during a specific stage of progression"),
@@ -93,13 +111,13 @@ async fn view_loadout(
                     $creator.embed(|embed| {
                         embed
                             .title(format!("{class} - {stage}"))
-                            .author(|a| a.name("datasianboi123").icon_url("https://tinyurl.com/5n7ny7es"))
+                            .author(|a| a.name(&ctx.author().name).icon_url(ctx.author().avatar_url().unwrap_or(String::new())))
                             .thumbnail(stage.img())
                             .field("<:armor:1129548766857404576> Armor", &loadout.armor, true)
                             .field("<:weapons:1129556916805304410> Weapons", bulleted_array(&loadout.weapons), true)
                             .field("<:equipment:1129549501712048178> Equipment", bulleted(&loadout.equipment), true)
                             .color(Color::DARK_RED)
-                            .footer(|f| f.text("Loadouts by GitGudWO"))
+                            .footer(|f| f.text("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
                             .timestamp(Timestamp::now());
                         let mut extra_iter = loadout.extra.iter().peekable();
                         let mut first = true;
@@ -131,6 +149,7 @@ async fn main() {
             commands: vec![
                 ping(),
                 view_loadout(),
+                help(),
             ],
             ..Default::default()
         })
