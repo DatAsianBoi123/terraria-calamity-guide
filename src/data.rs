@@ -5,6 +5,7 @@ use convert_case::{Casing, Case};
 use poise::ChoiceParameter;
 use serde::Deserialize;
 use crate::str;
+use linked_hash_map::LinkedHashMap;
 
 pub type LoadoutData = HashMap<Stage, StageData>;
 
@@ -143,7 +144,7 @@ pub struct Loadout {
     pub armor: String,
     pub weapons: [String; 4],
     pub equipment: Vec<String>,
-    pub extra: HashMap<String, Vec<String>>,
+    pub extra: LinkedHashMap<String, Vec<String>>,
 }
 
 pub fn load_data(mut buf: PathBuf) -> LoadoutData {
