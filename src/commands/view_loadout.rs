@@ -54,13 +54,17 @@ pub async fn view_loadout(
                             .field("<:armor:1129548766857404576> Armor", &loadout.armor, true)
                             .field("<:weapons:1129556916805304410> Weapons", bulleted_array(&loadout.weapons), true)
                             .field("<:equipment:1129549501712048178> Equipment", bulleted(&loadout.equipment), true)
-                            .field("** **", "** **", false) // force next field to be on next row
-                            .fields(loadout.extra.iter().map(|(title, list)| (title, bulleted(list), true)))
-                            .field("** **", "** **", false)
-                            .field("<:healing_potion:1129549725331370075> Healing Potion", stage_data.potion.to_string(), true)
                             .color(Color::DARK_RED)
                             .footer(|f| f.text("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
                             .timestamp(Timestamp::now());
+                        if !loadout.extra.is_empty() {
+                            embed
+                                .field("** **", "** **", false) // force next field to be on next row
+                                .fields(loadout.extra.iter().map(|(title, list)| (title, bulleted(list), true)));
+                        }
+                        embed
+                            .field("** **", "** **", false)
+                            .field("<:healing_potion:1129549725331370075> Healing Potion", stage_data.potion.to_string(), true);
                         if let Some(powerups) = &stage_data.powerups {
                             embed.field("<:powerups:1129550131000254614> Permanent Powerups", bulleted(powerups), true);
                         }
