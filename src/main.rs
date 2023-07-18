@@ -25,22 +25,6 @@ macro_rules! str {
     };
 }
 
-#[macro_export]
-macro_rules! str_slice {
-    [$($s: literal),*] => {
-        [
-            $($s.to_string(),)*
-        ]
-    }
-}
-
-#[macro_export]
-macro_rules! str_vec {
-    [$($s: literal),*] => {
-        vec![$($s.to_string(),)*]
-    }
-}
-
 #[shuttle_runtime::main]
 async fn poise(
     #[shuttle_secrets::Secrets] secret_store: SecretStore,
