@@ -35,6 +35,14 @@
           "Whip": ["Snapthorn"],
           "Sentry": ["Squirrel Squire Staff"]
         }
+      },
+      "Rogue": {
+        "armor": "Snow Ruffian/Gladiator",
+        "weapons": ["**Crystalline**", "Guilded/Gleaming Dagger", "Wulfrum Knives", "*Web Balls*"],
+        "equipment": ["Raider's Talisman", "Coin of Deceit", "Scuttler's Jewel", "Cloud in a Bottle", "Hermes Boots"],
+        "extra": {
+          "Optional Equipment": ["Rover Drive", "Vital Jelly", "Magiluminescence"]
+        }
       }
     }
   },
@@ -75,6 +83,14 @@
           "Whip": ["Snapthorn"],
           "Sentry": ["Polyp Launcher"]
         }
+      },
+      "Rogue": {
+        "armor": "Suphurous",
+        "weapons": ["**Infernal Kris**/**Ashen Stalactite**", "Mycoroot", "Meteor Fist", "Sticky Spike Ball/Poison Pack"],
+        "equipment": ["Raider's Talisman", "Coin of Deceit", "Lightning Boots", "Cloud in a Balloon", "Shield of Cthulu"],
+        "extra": {
+          "Stealth Equipment": ["Sand Cloak", "Silencing Sheath", "Scuttler's Jewel"]
+        }
       }
     }
   },
@@ -113,6 +129,14 @@
         "extra": {
           "Whip": ["Snapthorn"],
           "Sentry": ["Ballista Rod"]
+        }
+      },
+      "Rogue": {
+        "armor": "Aerospec",
+        "weapons": ["**Turbulance**/**Feather Knife**", "Tracking Disk", "Rot Ball/Tooth Ball", "*Hardened Honey Comb*"],
+        "equipment": ["Coin of Deceit", "Raider's Talisman", "Shield of Cthulu", "Bundle of Balloons", "Frostspark Boots"],
+        "extra": {
+          "Seath Equipment": ["Feather Crown", "Silencing Sheath", "Filthy Glove", "Bloodstained Glove"]
         }
       }
     }
@@ -153,6 +177,14 @@
         "extra": {
           "Whip": ["Spinal Tap"],
           "Sentry": ["Houndius Shootius"]
+        }
+      },
+      "Rogue": {
+        "armor": "Statigel",
+        "weapons": ["Kylie/Lionfish", "**Tracking Disk**", "Enchanted Axe/Gel Dart", "Metal Monstrosity"],
+        "equipment": ["Coin of Deceit", "Raider's Talisman", "Shield of Cthulu", "Skyline Wings", "Terraspark Boots"],
+        "extra": {
+          "Stealth Equipment": ["Mirage Mirror", "Silencing Sheath", "Filthy Glove", "Ink Bomb"]
         }
       }
     }
@@ -206,6 +238,19 @@
           "Whip": ["Firecracker"],
           "Sentry": ["Queen Spider Staff"]
         }
+      },
+      "Rogue": {
+        "armor": "Titan Heart",
+        "weapons": ["**Cobalt Kunai**", "Blazing Star/Burning Strife", "*Ichor Spear*", "Kelvin Catalyst (Post-Cryogen)"],
+        "equipment": [
+          "Filthy/Bloodstained Glove",
+          "Rogue Emblem",
+          "Silencing Sheath/Mirage Mirror",
+          "Shield of Cthulu",
+          "Fairy Wings",
+          "Terraspark Boots"
+        ],
+        "extra": {}
       }
     }
   },
@@ -244,6 +289,17 @@
           "Whip": ["Durendal"],
           "Sentry": ["Cryogenic Staff"]
         }
+      },
+      "Rogue": {
+        "armor": "Daedalus",
+        "weapons": [
+          "**Spear of Destiny**/**Frequency Manipulator**",
+          "Totality Breakers (Post-Calamitas)",
+          "Skyfin Bombers",
+          "Desecrated Water/Consecrated Water"
+        ],
+        "equipment": ["Ruin Medallion", "Electrician's Glove", "Corrosive Spine", "Ornate Shield", "Bat Wings", "Angel Treads"],
+        "extra": {}
       }
     }
   },
@@ -301,6 +357,19 @@
           "Whip": ["Dark Harvest"],
           "Sentry": ["Hive Pod"]
         }
+      },
+      "Rogue": {
+        "armor": "Umbraphile",
+        "weapons": ["**Duststorm in a Bottle**", "**Fantasy Talisman**", "Terra Disk/Sandslasher", "Auroradical Throw/Totality Breakers"],
+        "equipment": [
+          "Glove of Precision/Recklessness",
+          "Vampiric Talisman",
+          "Abyssal Mirror/Ruin Medallion",
+          "Asgard's Valor",
+          "Mothron Wings",
+          "Angel Treads"
+        ],
+        "extra": {}
       }
     }
   },
@@ -347,6 +416,14 @@
           "Sentry": ["Spikecrag Staff"],
           "Sentry Accessory*": ["Squire's Shield", "Apprentice's Scarf", "Huntress's Buckler", "Monk's Belt"]
         }
+      },
+      "Rogue": {
+        "armor": "Hydrothermic",
+        "weapons": ["Subduction Slicer", "**Malachite**", "Duke's Decapitator/Duststorm in a Bottle", "The Syringe"],
+        "equipment": ["Glove of Precision/Recklessness", "Vampiric Talisman", "Ethereal Extorter", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
+        "extra": {
+          "Optional/Steath Equipment": ["Plagued Fuel-Pack", "Abyssal Mirro", "Ruin Medallion", "Electrician's Glove"]
+        }
       }
     }
   },
@@ -391,6 +468,14 @@
         "extra": {
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Spikecrag Staff"]
+        }
+      },
+      "Rogue": {
+        "armor": "Hydrothermic",
+        "weapons": ["Shard of Antumbra", "**Radiant Star**/**Malachite**", "Duke's Decapitator", "The Syringe"],
+        "equipment": ["Glove of Precision/Recklessess", "Dark God's Sheath", "Ethereal Extorter", "Asgard's Valor", "Fishron Wings", "Angel Treads"],
+        "extra": {
+          "Optional Equipment": ["Vampiric Talisman", "Abyssal Mirror", "Plagued Fuel-Pack"]
         }
       }
     }
@@ -462,6 +547,19 @@
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Energy Staff"]
         }
+      },
+      "Rogue": {
+        "armor": "Empyrean",
+        "weapons": ["**Lunar Kunai**", "Celestial Reaper", "**Elemental Disk**", "Utensil Poker"],
+        "equipment": [
+          "Moonstone Crown",
+          "Blunder Booster",
+          "Dark God's Sheath",
+          "Abyssal Mirror/Ethereal Extorter",
+          "The Absorber/Deific Amulet",
+          "Asgard's Valor", "Seraph Tracers"
+        ],
+        "extra": {}
       }
     }
   },
@@ -532,6 +630,19 @@
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Guidelight of Oblivion"]
         }
+      },
+      "Rogue": {
+        "armor": "Tarragon",
+        "weapons": ["**Molten Amputator**/**Shattered Sun**", "**Wave Pounder**", "Alpha Virus/Profaned Partisan", "Cosmic Kunai"],
+        "equipment": [
+          "Dark God's Sheath",
+          "Blunder Booster",
+          "Moonstone Crown",
+          "Spectral Veil/Ethereal Extorter",
+          "The Absorber/Deific Amulet",
+          "Elysian Aegis", "Seraph Tracers"
+        ],
+        "extra": {}
       }
     }
   },
@@ -594,6 +705,19 @@
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Guidelight of Oblivion/Cadaverous Carrion"]
         }
+      },
+      "Rogue": {
+        "armor": "Bloodflare",
+        "weapons": ["**Deep Sea Dumbbell**", "Night's Gaze/Phantasmal Ruin", "Valediction/Ghoulish Gouger", "The Reaper"],
+        "equipment": [
+          "Dark God's Sheath",
+          "Blunder Booster",
+          "Moonstone Crown",
+          "Spectral Veil/Ethereal Extorter",
+          "The Absorber/Deific Amulet",
+          "Elysian Aegis", "Seraph Tracers"
+        ],
+        "extra": {}
       }
     }
   },
@@ -663,6 +787,19 @@
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Guidelight of Oblivion"]
         }
+      },
+      "Rogue": {
+        "armor": "Godslayer",
+        "weapons": ["**Executioner's Blade**", "Eclipse's Fall", "Plasma Grenade/God's Paranoia", "Penumbra/Hypothermia"],
+        "equipment": [
+          "Nanotech",
+          "Eclipse Mirror",
+          "Ethereal Extorter/Dark God's Sheath",
+          "The Sponge",
+          "Core of the Blood God",
+          "Asgardian Aegis", "Elysian Tracers"
+        ],
+        "extra": {}
       }
     }
   },
@@ -733,6 +870,24 @@
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Guidelight of Oblivion"]
         }
+      },
+      "Rogue": {
+        "armor": "Auric Tesla",
+        "weapons": [
+          "**Wrathwing**/**Seraphim**",
+          "Eclipse's Fall/Plasma Grenade",
+          "The Final Dawn/Seared Pan",
+          "Celestus/Atom Splitter (Post-Exo Mechs)"
+        ],
+        "equipment": [
+          "Nanotech",
+          "Eclipse Mirror",
+          "Dragon Scales",
+          "Ethereal Extorter/Dark God's Sheath",
+          "Rampart of Deities",
+          "Asgardian Aegis", "Celestial Tracers"
+        ],
+        "extra": {}
       }
     }
   },
@@ -802,6 +957,12 @@
           "Whip": ["Kaleidoscope"],
           "Sentry": ["Perdition"]
         }
+      },
+      "Rogue": {
+        "armor": "Demonshade",
+        "weapons": ["**Scarlet Devil**", "**Nanoblack Reaper**", "Celestus", "*Sacrifice*"],
+        "equipment": ["Nanotech", "Eclipse Mirro", "Dragon Scales", "Rampart of Deities", "Shattered Community", "Asgardian Aegis", "Celestial Tracers"],
+        "extra": {}
       }
     }
   }
