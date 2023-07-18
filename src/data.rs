@@ -4,7 +4,7 @@ use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display, path::Pat
 use convert_case::{Casing, Case};
 use poise::ChoiceParameter;
 use serde::Deserialize;
-use crate::{str, str_slice};
+use crate::str;
 
 pub type LoadoutData = HashMap<Stage, StageData>;
 
@@ -144,17 +144,6 @@ pub struct Loadout {
     pub weapons: [String; 4],
     pub equipment: Vec<String>,
     pub extra: HashMap<String, Vec<String>>,
-}
-
-impl Default for Loadout {
-    fn default() -> Self {
-        Loadout {
-            armor: str!("None"),
-            weapons: str_slice!["Weapon 1", "Weapon 2", "Weapon 3", "Weapon 4"],
-            equipment: vec![],
-            extra: HashMap::new(),
-        }
-    }
 }
 
 pub fn load_data(mut buf: PathBuf) -> LoadoutData {
