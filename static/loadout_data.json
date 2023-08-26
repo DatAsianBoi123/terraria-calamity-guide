@@ -53,7 +53,7 @@
     "loadouts": {
       "Melee": {
         "armor": "Molten/Victide",
-        "weapons": ["**Bladecrest Oathsword**", "Old Lord Oathsword", "Riptide/Seashine Sword", "Fiery Greatsword/Flamarang"],
+        "weapons": ["**Bladecrest Oathsword**", "Old Lord Oathsword", "Riptide/Seashine Sword", "Volcano/Flamarang"],
         "equipment": ["Fungal Symbiote", "Feral Claws", "Lightning Boots", "Cloud in a Balloon", "Shield of Cthulu"],
         "extra": {
           "Optional Equipment": ["Aero Stone", "Brain of Confusion", "Worm Scarf"]
