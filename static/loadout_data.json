@@ -85,7 +85,7 @@
         }
       },
       "Rogue": {
-        "armor": "Suphurous",
+        "armor": "Sulphurous",
         "weapons": ["**Infernal Kris**/**Ashen Stalactite**", "Mycoroot", "Meteor Fist", "Sticky Spike Ball/Poison Pack"],
         "equipment": ["Raider's Talisman", "Coin of Deceit", "Lightning Boots", "Cloud in a Balloon", "Shield of Cthulu"],
         "extra": {
