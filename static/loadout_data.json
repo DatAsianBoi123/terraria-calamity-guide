@@ -22,7 +22,7 @@
       "Mage": {
         "armor": "Jungle",
         "weapons": ["**Diamond Staff**", "Mana Rose", "Harvest Staff", "**Frost Bolt**"],
-        "equipment": ["Mana Jelly", "Mana Flower", "Band of Starpower/Frog Leg", "Cloud in a Bottle", "Hermes Boots"],
+        "equipment": ["Cleansing Jelly", "Mana Flower", "Band of Starpower/Frog Leg", "Cloud in a Bottle", "Hermes Boots"],
         "extra": {
           "Mana Potion": ["Lesser Mana Potion"]
         }
