@@ -68,7 +68,7 @@
         }
       },
       "Mage": {
-        "armor": "Jungle/Space",
+        "armor": "Jungle/Meteor",
         "weapons": ["**Acid Gun**/**Space Gun**", "**Flare Bolt**", "Demon Scythe", "Hellwing Staff"],
         "equipment": ["Magic Cuffs", "Mana Flower", "Shield of Cthulu", "Cloud in a Balloon", "Lightning Boots"],
         "extra": {
@@ -101,7 +101,7 @@
       "Melee": {
         "armor": "Aerospec/Molten",
         "weapons": ["**Broken Biome Blade**", "Wind Blade/Goldplume Spear", "Bladecrest/Old Lord Oathsword", "Fiery Greatsword/Flamarang"],
-        "equipment": ["Bloody Worm Tooth", "Feral Claws", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
+        "equipment": ["Bloody Worm Tooth", "Feral Claws", "Terraspark Boots", "Skyline Wings", "Shield of Cthulu"],
         "extra": {
           "Optional Equipment": ["Stinger Necklace", "Brain of Confusion", "Worm Scarf"]
         }
@@ -109,7 +109,7 @@
       "Ranger": {
         "armor": "Aerospec",
         "weapons": ["**Star Cannon**", "Aquashard Shotgun", "Galeforce/The Bee's Knees", "Dragoon Drizzlefish"],
-        "equipment": ["Luxor's Gift/Rusty Medallion", "Frog Leg", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
+        "equipment": ["Luxor's Gift/Rusty Medallion", "Frog Leg", "Terraspark Boots", "Skyline Wings", "Shield of Cthulu"],
         "extra": {
           "Ammo": ["Superball Bullets", "Acceleration Round", "Hellfire Arrows", "Jester Arrows", "Fallen Stars"]
         }
@@ -117,7 +117,7 @@
       "Mage": {
         "armor": "Aerospec",
         "weapons": ["**Tradewinds**", "Hellwing Staff/Bee Gun", "Shaderain Staff/Blood Bath", "Flare Bolt/Demon Scythe"],
-        "equipment": ["Magic Cuffs", "Mana Flower", "Shield of Cthulu", "Bundle of Balloons", "Frostspark Boots"],
+        "equipment": ["Magic Cuffs", "Mana Flower", "Shield of Cthulu", "Skyline Wings", "Terraspark Boots"],
         "extra": {
           "Mana Potion": ["Normal Mana Potion"]
         }
@@ -125,7 +125,7 @@
       "Summoner": {
         "armor": "Aerospec/Obsidian",
         "weapons": ["**Imp Staff**", "Cinder Blossom Staff", "Dank Staff/Blood Clot Staff", "**Star Swallower Containment Unit**"],
-        "equipment": ["Pygmy Necklace/Spirit Glyph", "Voltaic Jelly", "Frostspark Boots", "Bundle of Balloons", "Shield of Cthulu"],
+        "equipment": ["Pygmy Necklace/Spirit Glyph", "Voltaic Jelly", "Terraspark Boots", "Skyline Wings", "Shield of Cthulu"],
         "extra": {
           "Whip": ["Snapthorn"],
           "Sentry": ["Ballista Rod"]
@@ -134,9 +134,9 @@
       "Rogue": {
         "armor": "Aerospec",
         "weapons": ["**Turbulance**/**Feather Knife**", "Tracking Disk", "Rot Ball/Tooth Ball", "*Hardened Honey Comb*"],
-        "equipment": ["Coin of Deceit", "Raider's Talisman", "Shield of Cthulu", "Bundle of Balloons", "Frostspark Boots"],
+        "equipment": ["Coin of Deceit", "Raider's Talisman", "Shield of Cthulu", "Skyline Wings", "Terraspark Boots"],
         "extra": {
-          "Seath Equipment": ["Feather Crown", "Silencing Sheath", "Filthy Glove", "Bloodstained Glove"]
+          "Stealth Equipment": ["Feather Crown", "Silencing Sheath", "Filthy Glove", "Bloodstained Glove"]
         }
       }
     }
