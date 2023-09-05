@@ -3,7 +3,7 @@ use serenity::utils::Color;
 
 use crate::{Context, Result};
 
-#[command(slash_command, rename = "sendrules", required_permissions = "MANAGE_GUILD")]
+#[command(slash_command, rename = "sendrules", default_member_permissions = "MANAGE_GUILD")]
 pub async fn send_rules(ctx: Context<'_>) -> Result {
     ctx.channel_id().send_message(ctx, |m| {
         m.embed(|embed| {
@@ -27,3 +27,4 @@ pub async fn send_rules(ctx: Context<'_>) -> Result {
     ctx.send(|m| m.content("Done!").ephemeral(true)).await?;
     Ok(())
 }
+
