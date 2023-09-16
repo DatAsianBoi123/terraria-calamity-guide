@@ -2,6 +2,7 @@ use std::vec;
 
 use poise::{command, serenity_prelude::User};
 use serenity::{http::CacheHttp, utils::Color, model::Timestamp, futures::future};
+use sqlx::types::chrono::Utc;
 
 use crate::{
     Context,
@@ -89,7 +90,43 @@ async fn end(ctx: Context<'_>) -> Result {
     let mut data_lock = ctx.serenity_context().data.write().await;
     let finish_res = data_lock.get_mut::<Data>().expect("work").end(ctx.author(), &ctx.data().pool).await;
     match finish_res {
-        Ok(()) => ctx.say("Successfully ended your playthrough").await?,
+        Ok(playthrough) => {
+            let time_spent = playthrough.started
+                .map(|started| {
+                    macro_rules! find_highest {
+                        (($f: expr, $t: literal), ($l: expr, $n: literal)) => {{
+                            if $f > 0 {
+                                format!("{} {}", $f, $t)
+                            } else {
+                                format!("{} {}", $l, $n)
+                            }
+                        }};
+                        (($f: expr, $t: literal), ($l: expr, $n: literal), $(($a: expr, $o: expr)),+) => {{
+                            if $f > 0 {
+                                format!("{} {}", $f, $t)
+                            }
+                            $(
+                                else if $a > 0 {
+                                    format!("{} {}", $a, $o)
+                                }
+                             )*
+                            else {
+                                format!("{} {}", $l, $n)
+                            }
+                        }};
+                    }
+
+                    let duration = Utc::now().naive_utc() - started;
+                    find_highest!(
+                        (duration.num_days(), "days"),
+                        (duration.num_seconds(), "seconds"),
+                        (duration.num_hours(), "hours"),
+                        (duration.num_minutes(), "minutes")
+                    )
+                })
+                .unwrap_or(str!("Playthrough never started"));
+            ctx.say(format!("Successfully ended your playthrough\nTotal playthrough time: {time_spent}")).await?
+        },
         Err(FinishPlaythroughError::NotOwner) => ctx.say("You are not the owner of the playthrough you are in").await?,
         Err(FinishPlaythroughError::NotInPlaythrough) => ctx.say("You are not in a playthrough").await?,
     };
