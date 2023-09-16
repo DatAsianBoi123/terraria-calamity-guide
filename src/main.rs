@@ -14,7 +14,7 @@ use shuttle_secrets::SecretStore;
 use sqlx::{PgPool, Executor};
 use tracing::info;
 
-use crate::{commands::{ping::ping, help::help, send_rules::send_rules, view_loadout::view_loadout, view_item::view_item, playthrough::playthrough}, playthrough_data::PlaythroughData};
+use crate::{commands::{ping::ping, help::help, send_rules::send_rules, view_loadout::view_loadout, playthrough::playthrough}, playthrough_data::PlaythroughData};
 
 mod loadout_data;
 mod playthrough_data;
