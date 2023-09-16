@@ -78,7 +78,7 @@ impl PlaythroughData {
         Ok(self.active_playthroughs.get(&owner.id).expect("playthrough exists"))
     }
 
-    pub async fn end(&mut self, owner: &User, pool: &PgPool) -> Result<(), FinishPlaythroughError> {
+    pub async fn end(&mut self, owner: &User, pool: &PgPool) -> Result<Playthrough, FinishPlaythroughError> {
         if !self.active_playthroughs.contains_key(&owner.id) {
             return if self.all_users.contains(&owner.id) {
                 Err(FinishPlaythroughError::NotOwner)
@@ -96,11 +96,11 @@ impl PlaythroughData {
             .execute(pool).await.expect("query works");
 
         let playthrough = self.active_playthroughs.remove(&owner.id).expect("owner is in playthrough");
-        for player in playthrough.players {
+        playthrough.players.iter().for_each(|player| {
             self.all_users.remove(&player.id);
-        }
+        });
 
-        Ok(())
+        Ok(playthrough)
     }
 
     pub async fn start(&mut self, owner: &User, pool: &PgPool) -> Result<(), StartPlaythroughError> {
