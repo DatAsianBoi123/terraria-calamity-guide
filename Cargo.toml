@@ -8,16 +8,21 @@ edition = "2021"
 [dependencies]
 poise = { version = "0.5.5", features = ["cache"] }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
-dotenv = "0.15.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 convert_case = "0.6.0"
-shuttle-poise = "0.21.0"
-shuttle-runtime = "0.21.0"
-shuttle-secrets = "0.21.0"
-shuttle-static-folder = "0.21.0"
+shuttle-poise = "0.25.0"
+shuttle-runtime = "0.25.0"
+shuttle-secrets = "0.25.0"
+shuttle-static-folder = "0.25.0"
+shuttle-shared-db = { version = "0.25.0", features = ["postgres"] }
+sqlx = { version = "0.7.0", features = ["runtime-tokio-native-tls", "postgres", "bigdecimal", "chrono"] }
 tracing = "0.1.37"
 linked-hash-map = { version = "0.5.6", features = ["serde_impl"] }
+reqwest = "0.11.20"
+scraper = "0.17.1"
+num-traits = "0.2"
+num-derive = "0.4"
 
 [dependencies.serenity]
 default-features = false

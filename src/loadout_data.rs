@@ -2,9 +2,11 @@ use core::fmt;
 use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display, path::PathBuf};
 
 use convert_case::{Casing, Case};
-use poise::ChoiceParameter;
+use num_derive::FromPrimitive;
+use poise::{ChoiceParameter, serenity_prelude::User};
 use serde::Deserialize;
-use crate::str;
+use serenity::{builder::CreateEmbed, utils::Color, model::Timestamp};
+use crate::{str, bulleted_array, bulleted};
 use linked_hash_map::LinkedHashMap;
 
 pub type LoadoutData = HashMap<Stage, StageData>;
@@ -14,6 +16,36 @@ pub struct StageData {
     pub potion: PotionType,
     pub powerups: Option<Vec<Powerup>>,
     pub loadouts: HashMap<CalamityClass, Loadout>,
+}
+
+impl StageData {
+    pub fn format_embed<'a>(&self, embed: &'a mut CreateEmbed, author: &User, class: CalamityClass, stage: Stage) -> &'a mut CreateEmbed {
+        let loadout = self.loadouts.get(&class).expect("loadout exists for stage");
+        embed
+            .title(format!("{class} - {stage}"))
+            .author(|a| a.name(&author.name).icon_url(author.avatar_url().unwrap_or(String::new())))
+            .thumbnail(stage.img())
+            .field("<:armor:1129548766857404576> Armor", &loadout.armor, true)
+            .field("<:weapons:1129556916805304410> Weapons", bulleted_array(&loadout.weapons), true)
+            .field("<:equipment:1129549501712048178> Equipment", bulleted(&loadout.equipment), true)
+            .color(Color::DARK_RED)
+            .footer(|f| f.text("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
+            .timestamp(Timestamp::now());
+
+        if !loadout.extra.is_empty() {
+            embed
+                .field("** **", "** **", false) // force next field to be on next row
+                .fields(loadout.extra.iter().map(|(title, list)| (title, bulleted(list), true)));
+        }
+        embed
+            .field("** **", "** **", false)
+            .field("<:healing_potion:1129549725331370075> Healing Potion", self.potion.to_string(), true);
+        if let Some(powerups) = &self.powerups {
+            embed.field("<:powerups:1129550131000254614> Permanent Powerups", bulleted(powerups), true);
+        }
+        embed
+    }
+
 }
 
 #[derive(Deserialize, Debug)]
@@ -42,6 +74,7 @@ pub enum Powerup {
     DemonHeart,
     CelestialOnion,
 }
+
 
 impl Display for Powerup {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -72,7 +105,7 @@ impl Display for PotionType {
     }
 }
 
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, ChoiceParameter)]
+#[derive(Copy, Clone, Deserialize, Debug, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
 pub enum Stage {
     #[name = "Pre-Bosses"]
     PreBoss,
@@ -130,7 +163,7 @@ impl Stage {
     }
 }
 
-#[derive(Deserialize, Hash, PartialEq, Eq, ChoiceParameter)]
+#[derive(Clone, Copy, Deserialize, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
 pub enum CalamityClass {
     Melee,
     Ranger,
