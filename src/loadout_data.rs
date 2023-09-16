@@ -172,6 +172,18 @@ pub enum CalamityClass {
     Rogue,
 }
 
+impl CalamityClass {
+    pub fn emoji(&self) -> String {
+        match self {
+            Self::Melee => str!("<:melee:1152482097911574571>"),
+            Self::Ranger => str!("<:ranger:1152484385359142995>"),
+            Self::Mage => str!("<:mage:1152485318021361716>"),
+            Self::Summoner => str!("<:summoner:1152485908105396277>"),
+            Self::Rogue => str!("<:rogue:1152486391503126568>"),
+        }
+    }
+}
+
 #[derive(Deserialize, Clone)]
 pub struct Loadout {
     pub armor: String,
