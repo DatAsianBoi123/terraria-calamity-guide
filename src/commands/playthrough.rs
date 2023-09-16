@@ -9,8 +9,8 @@ use crate::{
     Data,
     loadout_data::{CalamityClass, Stage, LoadoutData},
     playthrough_data::{FinishPlaythroughError, Player, JoinPlayerError, LeaveError, StartPlaythroughError, KickError, ProgressError, Playthrough},
-    bulleted_iter,
     str,
+    bulleted,
 };
 
 #[command(
@@ -41,14 +41,14 @@ async fn view(
         }).expect("found playthrough player is in");
 
     let owner = playthrough.owner.to_user(ctx).await.expect("owner is a user");
-    let players = future::try_join_all(playthrough.players.iter()
-        .map(|p| p.id.to_user(ctx))).await.expect("join all");
+    let player_list = future::join_all(playthrough.players.iter()
+        .map(|p| async move { format!("{} - {}{}", p.id.to_user(ctx).await.expect("player is user").name, p.class, p.class.emoji()) })).await;
     ctx.send(|c| {
         c.embed(|embed| {
             embed
                 .title(format!("{}'s Playthrough", owner.name))
                 .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or(String::new()))
-                .field("Players", format!("{}", bulleted_iter(players.iter().map(|user| &user.name))), true)
+                .field("Players", bulleted(&player_list).to_string(), false)
                 .field("Date Started", match playthrough.started {
                     Some(date) => format!("<t:{}:D>", date.timestamp()),
                     None => str!("Playthrough hasn't started yet"),
@@ -74,8 +74,7 @@ async fn create(ctx: Context<'_>, #[description = "The class you're playing in t
         &ctx.data().pool,
     ).await;
     if create_res.is_ok() {
-        ctx.say(format!("that should have worked (hopefully)\ntotal playthroughs is now {}",
-                        data_lock.get::<Data>().expect("has playthroughs").active_playthroughs.len())).await?;
+        ctx.say("Successfully created a new playthrough").await?;
     } else {
         ctx.say("You are already in a playthrough!").await?;
     }
