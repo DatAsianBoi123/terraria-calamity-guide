@@ -1,4 +1,4 @@
-use std::vec;
+use std::{vec, result::Result as StdResult};
 
 use poise::{command, serenity_prelude::User};
 use serenity::{http::CacheHttp, utils::Color, model::Timestamp, futures::future};
@@ -145,10 +145,14 @@ async fn start(ctx: Context<'_>) -> Result {
     match start_res {
         Ok(()) => {
             let playthrough = data.active_playthroughs.get(&ctx.author().id).expect("thing exists");
-            let dm_off_users = resend_loadouts(ctx, playthrough, &ctx.data().loadouts, Stage::PreBoss).await;
-            for user in dm_off_users {
-                ctx.say(format!("{user}, I can't DM you! Please enable DMs if you want me to automatically send you loadouts!")).await?;
-            }
+            let dm_results = resend_loadouts(ctx, playthrough, &ctx.data().loadouts, Stage::PreBoss).await;
+            let error_futures = dm_results.into_iter().map(|(user, dm_res)| async move {
+                if dm_res.is_err() {
+                    ctx.say(format!("{user}, I can't DM you! Please enable DMs if you want me to automatically send you loadouts!")).await
+                        .expect("can message");
+                }
+            });
+            future::join_all(error_futures).await;
             ctx.say("Successfully started your playthrough!").await?
         },
         Err(StartPlaythroughError::NotOwner) => ctx.say("You are not the owner of the playthrough you are in").await?,
@@ -222,7 +226,9 @@ async fn progress(
     let progress_res = data_lock.get_mut::<Data>().expect("work").progress(ctx.author(), stage, &ctx.data().pool).await;
     match progress_res {
         Ok(playthrough) => {
-            resend_loadouts(ctx, playthrough, &ctx.data().loadouts, playthrough.stage).await;
+            if playthrough.started.is_some() {
+                resend_loadouts(ctx, playthrough, &ctx.data().loadouts, playthrough.stage).await;
+            }
             ctx.say(format!("Progressed to stage {}", playthrough.stage)).await?
         },
         Err(ProgressError::NotInPlaythrough) => ctx.say("You are not in a playthrough").await?,
@@ -233,17 +239,17 @@ async fn progress(
     Ok(())
 }
 
-async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadouts: &LoadoutData, stage: Stage) -> Vec<User> {
-    let mut dm_off_users = Vec::new();
-    for player in &playthrough.players {
-        let user = player.id.to_user(&http).await.expect("player id is a user");
-        let stage_data = loadouts.get(&stage).expect("loadout exists");
-        let dm_res = user.direct_message(&http, |c| c
-                             .embed(|e| stage_data.format_embed(e, &user, player.class, stage))).await;
-        if dm_res.is_err() {
-            dm_off_users.push(user);
+async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadouts: &LoadoutData, stage: Stage) -> Vec<(User, StdResult<(), serenity::Error>)> {
+    let dm_futures = playthrough.players.iter().map(|player| {
+        let http = http.http();
+        async move {
+            let user = player.id.to_user(&http).await.expect("player id is a user");
+            let stage_data = loadouts.get(&stage).expect("loadout exists");
+            let dm_res = user.direct_message(&http, |c| c
+                                .embed(|e| stage_data.format_embed(e, &user, player.class, stage))).await.map(|_| ());
+            (user, dm_res)
         }
-    }
-    dm_off_users
+    });
+    future::join_all(dm_futures).await
 }
 
