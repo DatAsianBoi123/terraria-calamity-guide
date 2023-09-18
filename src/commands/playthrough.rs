@@ -145,7 +145,7 @@ async fn start(ctx: Context<'_>) -> Result {
     match start_res {
         Ok(()) => {
             let playthrough = data.active_playthroughs.get(&ctx.author().id).expect("thing exists");
-            let dm_results = resend_loadouts(ctx, playthrough, &ctx.data().loadouts, Stage::PreBoss).await;
+            let dm_results = resend_loadouts(ctx, playthrough, &ctx.data().loadouts).await;
             let error_futures = dm_results.into_iter().map(|(user, dm_res)| async move {
                 if dm_res.is_err() {
                     ctx.say(format!("{user}, I can't DM you! Please enable DMs if you want me to automatically send you loadouts!")).await
@@ -227,7 +227,7 @@ async fn progress(
     match progress_res {
         Ok(playthrough) => {
             if playthrough.started.is_some() {
-                resend_loadouts(ctx, playthrough, &ctx.data().loadouts, playthrough.stage).await;
+                resend_loadouts(ctx, playthrough, &ctx.data().loadouts).await;
             }
             ctx.say(format!("Progressed to stage {}", playthrough.stage)).await?
         },
@@ -239,14 +239,14 @@ async fn progress(
     Ok(())
 }
 
-async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadouts: &LoadoutData, stage: Stage) -> Vec<(User, StdResult<(), serenity::Error>)> {
+async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadouts: &LoadoutData) -> Vec<(User, StdResult<(), serenity::Error>)> {
     let dm_futures = playthrough.players.iter().map(|player| {
         let http = http.http();
         async move {
             let user = player.id.to_user(&http).await.expect("player id is a user");
-            let stage_data = loadouts.get(&stage).expect("loadout exists");
+            let stage_data = loadouts.get(&playthrough.stage).expect("loadout exists");
             let dm_res = user.direct_message(&http, |c| c
-                                .embed(|e| stage_data.format_embed(e, &user, player.class, stage))).await.map(|_| ());
+                                .embed(|e| stage_data.format_embed(e, &user, player.class, playthrough.stage))).await.map(|_| ());
             (user, dm_res)
         }
     });
