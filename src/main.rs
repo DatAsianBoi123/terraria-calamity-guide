@@ -2,7 +2,6 @@
 
 use std::{path::PathBuf, fs};
 
-use commands::db::db;
 use loadout_data::LoadoutData;
 use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus}};
 use serenity::prelude::{GatewayIntents, TypeMapKey};
@@ -14,7 +13,7 @@ use shuttle_secrets::SecretStore;
 use sqlx::{PgPool, Executor};
 use tracing::info;
 
-use crate::{commands::{ping::ping, help::help, send_rules::send_rules, view_loadout::view_loadout, playthrough::playthrough}, playthrough_data::PlaythroughData};
+use crate::{commands::{ping::ping, help::help, view_loadout::view_loadout, playthrough::playthrough}, playthrough_data::PlaythroughData};
 
 mod loadout_data;
 mod playthrough_data;
@@ -61,9 +60,7 @@ async fn poise(
                 ping(),
                 view_loadout(),
                 help(),
-                send_rules(),
                 playthrough(),
-                db(),
             ],
             ..Default::default()
         })
