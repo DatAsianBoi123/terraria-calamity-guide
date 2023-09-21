@@ -1,5 +1,5 @@
 use core::fmt;
-use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display, path::PathBuf};
+use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display};
 
 use convert_case::{Casing, Case};
 use num_derive::FromPrimitive;
@@ -192,8 +192,7 @@ pub struct Loadout {
     pub extra: LinkedHashMap<String, Vec<String>>,
 }
 
-pub fn load_data(mut buf: PathBuf) -> LoadoutData {
-    buf.push("loadout_data.json");
-    serde_json::from_reader(BufReader::new(File::open(buf).expect("exists"))).expect("valid json")
+pub fn load_data(loadouts: File) -> LoadoutData {
+    serde_json::from_reader(BufReader::new(loadouts)).expect("valid json")
 }
 
