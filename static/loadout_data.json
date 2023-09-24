@@ -495,7 +495,7 @@
           "Fire Gauntlet",
           "Warbanner of the Sun",
           "The Community",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {}
       },
@@ -509,7 +509,7 @@
           "Asgard's Valor",
           "Dynamo Stem Cells/Absorber",
           "The Community",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Ammo": ["Hyperius Bullets", "Luminite Bullets", "Holy Fire Bullets", "Luminite/Elysian Arrows"]
@@ -525,7 +525,7 @@
           "The Absorber",
           "Asgard's Valor",
           "The Community",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Mana Potion": ["Surpeme Mana Potion", "Aureus Cell"]
@@ -541,7 +541,7 @@
           "The Absorber",
           "The Community",
           "Asgard's Valor",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Whip": ["Kaleidoscope"],
@@ -557,7 +557,8 @@
           "Dark God's Sheath",
           "Abyssal Mirror/Ethereal Extorter",
           "The Absorber/Deific Amulet",
-          "Asgard's Valor", "Seraph Tracers"
+          "Asgard's Valor",
+          "Celestial Tracers"
         ],
         "extra": {}
       }
@@ -578,7 +579,7 @@
           "Fire Gauntlet",
           "Warbanner of the Sun",
           "Elysian Aegis",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {}
       },
@@ -592,7 +593,7 @@
           "Elysian Aegis",
           "Dynamo Stem Cells/Absorber",
           "The Community",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Ammo": ["Bloodfire Bullets", "Bloodfire Arrows", "Holy Fire Bullets", "Mini Nuke I"]
@@ -608,7 +609,7 @@
           "The Absorber",
           "Elysian Aegis",
           "The Community",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
@@ -624,7 +625,7 @@
           "Profaned Soul Artifact",
           "The Absorber",
           "Asgard's Valor",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Whip": ["Kaleidoscope"],
@@ -640,7 +641,8 @@
           "Moonstone Crown",
           "Spectral Veil/Ethereal Extorter",
           "The Absorber/Deific Amulet",
-          "Elysian Aegis", "Seraph Tracers"
+          "Elysian Aegis",
+          "Celestial Tracers"
         ],
         "extra": {}
       }
@@ -667,7 +669,7 @@
           "Elysian Aegis",
           "Reaper Tooth Necklace",
           "Affliction",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Ammo": ["Bloodfire Bullets", "Bloodfire Arrows", "Holy Fire Bullets"]
@@ -683,7 +685,7 @@
           "Reaper Tooth Necklace",
           "Elysian Aegis",
           "Affliction",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
@@ -699,7 +701,7 @@
           "Mutated Truffle/Profaned Soul Artifact",
           "The Absorber/Affliction",
           "Asgard's Valor",
-          "Seraph Tracers"
+          "Celestial Tracers"
         ],
         "extra": {
           "Whip": ["Kaleidoscope"],
@@ -715,7 +717,8 @@
           "Moonstone Crown",
           "Spectral Veil/Ethereal Extorter",
           "The Absorber/Deific Amulet",
-          "Elysian Aegis", "Seraph Tracers"
+          "Elysian Aegis",
+          "Celestial Tracers"
         ],
         "extra": {}
       }
@@ -797,7 +800,8 @@
           "Ethereal Extorter/Dark God's Sheath",
           "The Sponge",
           "Core of the Blood God",
-          "Asgardian Aegis", "Elysian Tracers"
+          "Asgardian Aegis",
+          "Elysian Tracers"
         ],
         "extra": {}
       }
@@ -818,7 +822,7 @@
           "Warbanner of the Sun",
           "The Sponge/Rampart of Deities",
           "Dark Sun Ring",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {}
       },
@@ -832,7 +836,7 @@
           "Yharim's Gift",
           "Reaper Tooth Necklace",
           "Asgardian Aegis",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {
           "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
@@ -848,7 +852,7 @@
           "Yharim's Gift",
           "The Sponge",
           "Affliction/The Community",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
@@ -864,7 +868,7 @@
           "Core of the Blood God",
           "The Sponge/Rampart of Deities",
           "Asgardian Aegis",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {
           "Whip": ["Kaleidoscope"],
@@ -885,7 +889,8 @@
           "Dragon Scales",
           "Ethereal Extorter/Dark God's Sheath",
           "Rampart of Deities",
-          "Asgardian Aegis", "Celestial Tracers"
+          "Asgardian Aegis",
+          "Seraph Tracers"
         ],
         "extra": {}
       }
@@ -905,7 +910,7 @@
           "Warbanner of the Sun",
           "Shattered Community",
           "Dark Sun Ring",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {}
       },
@@ -919,7 +924,7 @@
           "Shattered Community",
           "Yharim's Gift",
           "Asgardian Aegis",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {
           "Ammo": ["God Slayer Slugs", "Vanquisher Arrows", "Bloodfire Arrows", "Mini Nuke I"]
@@ -935,7 +940,7 @@
           "Dimensional Soul Artifact",
           "The Sponge",
           "Yharim's Gift",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {
           "Mana Potion": ["Supreme Mana Potion", "Aureus Cell"]
@@ -951,7 +956,7 @@
           "Dark Sun Ring",
           "The Sponge/Rampart of Deities",
           "Asgardian Aegis",
-          "Celestial Tracers"
+          "Seraph Tracers"
         ],
         "extra": {
           "Whip": ["Kaleidoscope"],
@@ -961,7 +966,7 @@
       "Rogue": {
         "armor": "Demonshade",
         "weapons": ["**Scarlet Devil**", "**Nanoblack Reaper**", "Celestus", "*Sacrifice*"],
-        "equipment": ["Nanotech", "Eclipse Mirro", "Dragon Scales", "Rampart of Deities", "Shattered Community", "Asgardian Aegis", "Celestial Tracers"],
+        "equipment": ["Nanotech", "Eclipse Mirro", "Dragon Scales", "Rampart of Deities", "Shattered Community", "Asgardian Aegis", "Seraph Tracers"],
         "extra": {}
       }
     }
