@@ -2,8 +2,10 @@
 
 use std::fs::{self, File};
 
+use commands::{report::report, db::db};
+use issue::Issues;
 use loadout_data::LoadoutData;
-use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus}};
+use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus, GuildId, ChannelId, GuildChannel, Interaction, ComponentType, InteractionResponseType}, Event, FrameworkContext};
 use serenity::prelude::{GatewayIntents, TypeMapKey};
 
 use shuttle_poise::ShuttlePoise;
@@ -18,6 +20,14 @@ use crate::{commands::{ping::ping, help::help, view_loadout::view_loadout, playt
 mod loadout_data;
 mod playthrough_data;
 mod commands;
+mod issue;
+
+#[macro_export]
+macro_rules! str {
+    ($s: literal) => {
+        $s.to_string()
+    };
+}
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Result = std::result::Result<(), Error>;
@@ -26,17 +36,16 @@ pub type Context<'a> = poise::Context<'a, Data, Error>;
 pub struct Data {
     loadouts: LoadoutData,
     pool: PgPool,
+    issue_channel: GuildChannel,
+}
+
+pub struct MutableData {
+    playthroughs: PlaythroughData,
+    issues: Issues,
 }
 
 impl TypeMapKey for Data {
-    type Value = PlaythroughData;
-}
-
-#[macro_export]
-macro_rules! str {
-    ($s: literal) => {
-        $s.to_string()
-    };
+    type Value = MutableData;
 }
 
 #[shuttle_runtime::main]
@@ -58,7 +67,12 @@ async fn poise(
                 view_loadout(),
                 help(),
                 playthrough(),
+                report(),
+                db(),
             ],
+            event_handler: |ctx, event, framework, data| {
+                Box::pin(event_handler(ctx, event, framework, data))
+            },
             ..Default::default()
         })
         .token(token)
@@ -67,19 +81,57 @@ async fn poise(
             Box::pin(async move {
                 register_globally(ctx, &framework.options().commands).await?;
                 ctx.set_presence(Some(Activity::playing("TModLoader")), OnlineStatus::Online).await;
-                {
-                    ctx.data.write().await.insert::<Data>(PlaythroughData::load(&pool).await);
-                }
+
+                let mut data_lock = ctx.data.write().await;
+                let playthroughs = PlaythroughData::load(&pool).await;
+                let issues = Issues::load(&ctx.http, &pool).await;
+                data_lock.insert::<Data>(MutableData {
+                    playthroughs,
+                    issues,
+                });
+
+                let guild_id: u64 = secret_store.get("ISSUE_GUILD").and_then(|id| id.parse().ok()).expect("issue guild should be valid and exists");
+                let guild_id = GuildId::from(guild_id);
+
+                let channel_id: u64 = secret_store.get("ISSUE_CHANNEL").and_then(|id| id.parse().ok()).expect("issue channel should be valid and exists");
+                let channel_id = ChannelId::from(channel_id);
+
+                let channels = guild_id.channels(&ctx.http).await?;
+                let issue_channel = channels.get(&channel_id).expect("channel exists");
+                info!("loaded {} playthroughs", data_lock.get::<Data>().expect("data exists").playthroughs.active_playthroughs.len());
+                info!("loaded {} issues", data_lock.get::<Data>().expect("data exists").issues.issues.len());
                 info!("ready! logged in as {}", ready.user.tag());
-                info!("loaded {} playthroughs", ctx.data.read().await.get::<Data>().expect("contains data").active_playthroughs.len());
                 Ok(Data {
                     loadouts: loadout_data::load_data(File::open("static/loadout_data.json").expect("file exists")),
-                    pool
+                    pool,
+                    issue_channel: issue_channel.clone(),
                 })
             })
         }).build().await.map_err(CustomError::new)?;
 
     Ok(framework.into())
+}
+
+async fn event_handler(ctx: &poise::serenity_prelude::Context, event: &Event<'_>, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> Result {
+    match event {
+        Event::InteractionCreate {
+            interaction: Interaction::MessageComponent(interaction)
+        } if interaction.data.component_type == ComponentType::Button && interaction.data.custom_id.starts_with("r-") => {
+            let id: i32 = interaction.data.custom_id[2..].parse().expect("issue id is a number");
+
+            let mut issues = ctx.data.write().await;
+            let issues = &mut issues.get_mut::<Data>().expect("data exists").issues;
+            let issue = issues.resolve(id, &data.pool).await.expect("issue exists");
+
+            interaction.create_interaction_response(&ctx.http, |r| {
+                r.kind(InteractionResponseType::UpdateMessage)
+                    .interaction_response_data(|edit| edit.set_embed(issue.create_resolved_embed()).components(|c| c))
+            }).await?;
+        }
+        _ => {},
+    }
+
+    Ok(())
 }
 
 pub fn bulleted<S>(vec: &Vec<S>) -> String

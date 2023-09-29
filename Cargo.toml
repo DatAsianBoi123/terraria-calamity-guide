@@ -22,6 +22,7 @@ reqwest = "0.11.20"
 scraper = "0.17.1"
 num-traits = "0.2"
 num-derive = "0.4"
+rand = "0.8.5"
 
 [dependencies.serenity]
 default-features = false

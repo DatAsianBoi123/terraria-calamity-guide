@@ -30,7 +30,7 @@ async fn view(
 ) -> Result {
     let user = other.as_ref().unwrap_or(ctx.author());
     let data_lock = ctx.serenity_context().data.read().await;
-    let data_lock = data_lock.get::<Data>().expect("work");
+    let data_lock = &data_lock.get::<Data>().expect("work").playthroughs;
     if !data_lock.all_users.contains(&user.id) {
         ctx.say(format!("{} not currently in a playthrough", other.map(|_| "That user is").unwrap_or("You are"))).await?;
         return Ok(());
@@ -69,7 +69,7 @@ async fn create(ctx: Context<'_>, #[description = "The class you're playing in t
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let create_res = data_lock.get_mut::<Data>().expect("work").create(
+    let create_res = data_lock.get_mut::<Data>().expect("work").playthroughs.create(
         ctx.author(),
         class,
         &ctx.data().pool,
@@ -88,7 +88,7 @@ async fn end(ctx: Context<'_>) -> Result {
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let finish_res = data_lock.get_mut::<Data>().expect("work").end(ctx.author(), &ctx.data().pool).await;
+    let finish_res = data_lock.get_mut::<Data>().expect("work").playthroughs.end(ctx.author(), &ctx.data().pool).await;
     match finish_res {
         Ok(playthrough) => {
             let time_spent = playthrough.started
@@ -139,7 +139,7 @@ async fn start(ctx: Context<'_>) -> Result {
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let data = data_lock.get_mut::<Data>().expect("work");
+    let data = &mut data_lock.get_mut::<Data>().expect("work").playthroughs;
     let start_res = data.start(ctx.author(), &ctx.data().pool).await;
 
     match start_res {
@@ -172,7 +172,11 @@ async fn join(
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let add_res = data_lock.get_mut::<Data>().expect("work").join_player(&owner, Player { id: ctx.author().id, class }, &ctx.data().pool).await;
+    let add_res = data_lock.get_mut::<Data>().expect("work").playthroughs.join_player(
+        &owner,
+        Player { id: ctx.author().id, class },
+        &ctx.data().pool,
+    ).await;
     match add_res {
         Ok(()) => ctx.say(format!("Successfully joined {}'s playthrough", owner)).await?,
         Err(JoinPlayerError::PlayerNotInPlaythrough) => ctx.say("That player is not in a playthrough").await?,
@@ -188,7 +192,7 @@ async fn kick(ctx: Context<'_>, #[description = "The player you want to kick"] p
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let kick_res = data_lock.get_mut::<Data>().expect("work").kick(ctx.author(), &player, &ctx.data().pool).await;
+    let kick_res = data_lock.get_mut::<Data>().expect("work").playthroughs.kick(ctx.author(), &player, &ctx.data().pool).await;
     match kick_res {
         Ok(()) => ctx.say(format!("Successfully kicked {} from your playthrough", player)).await?,
         Err(KickError::NotOwner) => ctx.say("You are not the owner of the playthrough you are in").await?,
@@ -205,7 +209,7 @@ async fn leave(ctx: Context<'_>) -> Result {
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let leave_res = data_lock.get_mut::<Data>().expect("work").leave(ctx.author(), &ctx.data().pool).await;
+    let leave_res = data_lock.get_mut::<Data>().expect("work").playthroughs.leave(ctx.author(), &ctx.data().pool).await;
     match leave_res {
         Ok(playthrough) => ctx.say(format!("Successfully left <@{}>'s playthrough", playthrough.owner)).await?,
         Err(LeaveError::NotInPlaythrough) => ctx.say("You are not in a playthrough").await?,
@@ -223,7 +227,7 @@ async fn progress(
     ctx.defer().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let progress_res = data_lock.get_mut::<Data>().expect("work").progress(ctx.author(), stage, &ctx.data().pool).await;
+    let progress_res = data_lock.get_mut::<Data>().expect("work").playthroughs.progress(ctx.author(), stage, &ctx.data().pool).await;
     match progress_res {
         Ok(playthrough) => {
             if playthrough.started.is_some() {

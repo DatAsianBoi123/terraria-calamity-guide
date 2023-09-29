@@ -3154,6 +3154,7 @@ dependencies = [
  "num-derive",
  "num-traits",
  "poise",
+ "rand",
  "reqwest",
  "scraper",
  "serde",
