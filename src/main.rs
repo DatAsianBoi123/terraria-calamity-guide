@@ -1,26 +1,29 @@
 #![deny(unused_crate_dependencies)]
+use shuttle_poise as _;
 
-use std::fs::{self, File};
+use std::{fs::{self, File}, net::SocketAddr};
 
 use commands::{report::report, db::db};
 use issue::Issues;
 use loadout_data::LoadoutData;
-use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus, GuildId, ChannelId, GuildChannel, Interaction, ComponentType, InteractionResponseType}, Event, FrameworkContext};
+use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus, GuildId, ChannelId, GuildChannel, Interaction, ComponentType, InteractionResponseType}, Event, FrameworkContext, FrameworkBuilder};
+use rocket::{fs::{FileServer, relative}, routes};
 use serenity::prelude::{GatewayIntents, TypeMapKey};
 
-use shuttle_poise::ShuttlePoise;
-use shuttle_runtime::CustomError;
+use shuttle_rocket::RocketService;
+use shuttle_runtime::{CustomError, Service};
 use shuttle_secrets::SecretStore;
 
 use sqlx::{PgPool, Executor};
 use tracing::info;
 
-use crate::{commands::{ping::ping, help::help, view_loadout::view_loadout, playthrough::playthrough}, playthrough_data::PlaythroughData};
+use crate::{commands::{ping::ping, help::help, view_loadout::view_loadout, playthrough::playthrough}, playthrough_data::PlaythroughData, route::invite};
 
 mod loadout_data;
 mod playthrough_data;
 mod commands;
 mod issue;
+mod route;
 
 #[macro_export]
 macro_rules! str {
@@ -48,13 +51,32 @@ impl TypeMapKey for Data {
     type Value = MutableData;
 }
 
+struct PoiseRocketService {
+    pub poise: FrameworkBuilder<Data, Box<(dyn std::error::Error + Send + Sync + 'static)>>,
+    pub rocket: RocketService,
+}
+
+#[shuttle_runtime::async_trait]
+impl Service for PoiseRocketService {
+    async fn bind(mut self, addr: SocketAddr) -> std::result::Result<(), shuttle_runtime::Error> {
+        let binder = self.rocket.bind(addr);
+
+        tokio::select! {
+            _ = self.poise.run() => {},
+            _ = binder => {},
+        }
+
+        Ok(())
+    }
+}
+
 #[shuttle_runtime::main]
 async fn poise(
     #[shuttle_secrets::Secrets] secret_store: SecretStore,
     #[shuttle_shared_db::Postgres(
         local_uri = "postgres://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb"
     )] pool: PgPool,
-) -> ShuttlePoise<Data, Error> {
+) -> std::result::Result<PoiseRocketService, shuttle_runtime::Error> {
     let token = secret_store.get("TOKEN").expect("TOKEN not found");
 
     let schema = fs::read_to_string("static/schema.sql").expect("file exists");
@@ -107,9 +129,15 @@ async fn poise(
                     issue_channel: issue_channel.clone(),
                 })
             })
-        }).build().await.map_err(CustomError::new)?;
+        });
 
-    Ok(framework.into())
+
+    let rocket = rocket::build()
+        .mount("/", FileServer::from(relative!("static/public")))
+        .mount("/", routes![invite])
+        .into();
+
+    Ok(PoiseRocketService { poise: framework, rocket })
 }
 
 async fn event_handler(ctx: &poise::serenity_prelude::Context, event: &Event<'_>, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> Result {
