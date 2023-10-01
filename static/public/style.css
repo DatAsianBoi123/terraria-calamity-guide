@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa&family=Dela+Gothic+One&family=Dosis&family=Josefin+Sans&display=swap');
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #25242D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4E4A51;
+  border-radius: 2px;
+}
+
+hr {
+  border: 1px dashed black;
+  opacity: 0.2;
+}
+
+.title {
+  overflow: auto;
+  text-align: center;
+  height: 100vh;
+}
+
+.title .background {
+  position: absolute;
+  background: linear-gradient(0.375turn, #F2544C, #F2A74C);
+  width: 100%;
+  height: 100%;
+  animation-name: hue-shift;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  z-index: -2;
+}
+
+.title .particles {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.title h1 {
+  font-size: 110px;
+  font-family: 'Delta Gothic One', sans-serif;
+  font-weight: 700;
+  color: white;
+  margin-top: 200px;
+  margin-bottom: 100px;
+  text-shadow: #25242D -2px 2px 8px;
+}
+
+.title a {
+  display: inline-block;
+  background: white;
+  padding: 30px 40px;
+  margin: 20px;
+  border-radius: 100px;
+  text-decoration: none;
+  font-size: 22px;
+  font-family: 'Comfortaa', sans-serif;
+  color: black;
+  transition-duration: 0.2s;
+}
+.title a:hover {
+  transform: translate(3px, -3px);
+  filter: drop-shadow(-6px 6px lightgray);
+}
+.title a:active {
+  transform: translate(0, 0);
+  filter: none;
+}
+
+.title a img {
+  width: 1em;
+  margin-right: 12px;
+  transform: scale(1.5);
+}
+
+.heading {
+  background: #25242D;
+  height: 170px;
+  text-align: center;
+  color: white;
+}
+
+.heading h1 {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 55px;
+  font-family: 'Comfortaa', sans-serif;
+  letter-spacing: 1px;
+}
+
+.section {
+  background: #E2E1E2;
+}
+
+.section .txtwpic {
+  position: relative;
+  padding: 40px 60px;
+  height: 600px;
+}
+
+.section .txtwpic .txt {
+  position: absolute;
+  padding: 50px 0;
+  width: 50%;
+}
+
+.section .txtwpic.left .txt {
+  right: 60px;
+}
+
+.section .txtwpic .txt h2 {
+  font-family: 'Dosis', sans-serif;
+  font-size: 40px;
+  letter-spacing: 1px;
+  margin-bottom: 40px;
+}
+
+.section .txtwpic.left .txt h2 {
+  text-align: right;
+}
+
+.section .txtwpic .txt p {
+  font-family: 'Josefin Sans', Arial, Helvetica, sans-serif;
+  font-size: 23px;
+}
+
+.section .txtwpic.left .txt p {
+  text-align: right;
+}
+
+.section .txtwpic .img {
+  position: absolute;
+  object-fit: contain;
+  height: calc(100% - 80px);
+}
+
+.section .txtwpic.right .img {
+  right: 60px;
+}
+
+.section .txtwpic .img img {
+  height: 100%;
+  border-radius: 10px;
+}
+
+.section .txtwpic.right .img img {
+  transform: rotateX(6deg) rotateY(6deg) rotateZ(1deg) scale(0.95);
+  filter: drop-shadow(black 10px 10px 15px);
+}
+
+.section .txtwpic.left .img img {
+  transform: rotateX(-6deg) rotateY(6deg) rotateZ(-1deg) scale(0.95);
+  filter: drop-shadow(black -10px 10px 15px);
+}
+
+@keyframes hue-shift {
+  from {
+    filter: hue-rotate(0);
+  }
+
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
