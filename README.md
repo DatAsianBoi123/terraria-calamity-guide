@@ -1,6 +1,6 @@
 # Terraria Guide Bot
 
-[![Add to Server](https://img.shields.io/badge/discord-Add_to_Server-blue)](https://terraria-bot.shuttleapp.com/invite)
+[![Add to Server](https://img.shields.io/badge/discord-Add_to_Server-blue)](https://terraria-bot.shuttleapp.rs/invite)
 
 A discord bot designed to help you on your next Calamity playthrough.
 
