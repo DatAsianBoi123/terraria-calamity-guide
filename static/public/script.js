@@ -99,8 +99,8 @@ function tick() {
 
 window.addEventListener('mousemove', e => {
   const rect = particleCanvas.getBoundingClientRect();
-  mouseX = e.x + document.body.scrollLeft - rect.x;
-  mouseY = e.y + document.body.scrollTop - rect.y;
+  mouseX = e.x - rect.x;
+  mouseY = e.y - rect.y;
 });
 
 window.addEventListener('resize', () => {
