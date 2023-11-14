@@ -1,4 +1,4 @@
-# Terraria Guide Bot
+# Terraria Calamity Guide
 
 [![Add to Server](https://img.shields.io/badge/discord-Add_to_Server-blue)](https://terraria-bot.shuttleapp.rs/invite)
 
