@@ -120,8 +120,11 @@ async fn poise(
 
                 let channels = guild_id.channels(&ctx.http).await?;
                 let issue_channel = channels.get(&channel_id).expect("channel exists");
+
+                let all_guilds = ctx.cache.guild_count();
                 info!("loaded {} playthroughs", data_lock.get::<Data>().expect("data exists").playthroughs.active_playthroughs.len());
                 info!("loaded {} issues", data_lock.get::<Data>().expect("data exists").issues.issues.len());
+                info!("helping playthroughs in {} guilds", all_guilds);
                 info!("ready! logged in as {}", ready.user.tag());
                 Ok(Data {
                     loadouts: loadout_data::load_data(File::open("static/loadout_data.json").expect("file exists")),
