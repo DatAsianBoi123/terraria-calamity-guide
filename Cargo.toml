@@ -7,16 +7,16 @@ edition = "2021"
 
 [dependencies]
 poise = { version = "0.5.5", features = ["cache"] }
-rocket = { version = "=0.5.0-rc.3" }
+rocket = { version = "0.5.0" }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 convert_case = "0.6.0"
-shuttle-poise = "0.27.0"
-shuttle-rocket = "0.27.0"
-shuttle-runtime = "0.27.0"
-shuttle-secrets = "0.27.0"
-shuttle-shared-db = { version = "0.27.0", features = ["postgres"] }
+shuttle-poise = "0.34.1"
+shuttle-rocket = "0.34.1"
+shuttle-runtime = "0.34.1"
+shuttle-secrets = "0.34.1"
+shuttle-shared-db = { version = "0.34.1", features = ["postgres"] }
 sqlx = { version = "0.7.0", features = ["runtime-tokio-native-tls", "postgres", "bigdecimal", "chrono"] }
 tracing = "0.1.37"
 linked-hash-map = { version = "0.5.6", features = ["serde_impl"] }
