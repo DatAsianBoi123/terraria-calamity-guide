@@ -1,4 +1,4 @@
-use std::{vec, result::Result as StdResult};
+use std::{vec, result::Result as StdResult, convert::Into};
 
 use poise::{command, serenity_prelude::User};
 use serenity::{http::CacheHttp, utils::Color, model::Timestamp, futures::future};
@@ -11,15 +11,25 @@ use crate::{
     loadout_data::{CalamityClass, Stage, LoadoutData},
     playthrough_data::{FinishPlaythroughError, Player, JoinPlayerError, LeaveError, StartPlaythroughError, KickError, ProgressError, Playthrough},
     str,
-    bulleted,
+    bulleted, ordered_list,
 };
 
 #[command(
     slash_command,
-    subcommands("view", "create", "end", "start", "join", "kick", "leave", "progress"),
+    subcommands("list", "view", "create", "end", "start", "join", "kick", "leave", "progress"),
     description_localized("en-US", "All playthrough related commands"),
 )]
 pub async fn playthrough(_: Context<'_>) -> Result {
+    Ok(())
+}
+
+#[command(slash_command, owners_only, ephemeral)]
+async fn list(ctx: Context<'_>) -> Result {
+    let data_lock = ctx.serenity_context().data.read().await;
+    let playthroughs = &data_lock.get::<Data>().expect("get data").playthroughs.active_playthroughs;
+    let owners = future::join_all(playthroughs.iter()
+        .map(|(owner, _)| async { owner.to_user(&ctx).await.expect("user exists").name })).await;
+    ctx.say(ordered_list(&owners)).await?;
     Ok(())
 }
 

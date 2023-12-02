@@ -27,7 +27,7 @@ mod route;
 
 #[macro_export]
 macro_rules! str {
-    ($s: literal) => {
+    ($s: expr) => {
         $s.to_string()
     };
 }
@@ -163,6 +163,15 @@ async fn event_handler(ctx: &poise::serenity_prelude::Context, event: &Event<'_>
     }
 
     Ok(())
+}
+
+pub fn ordered_list<S>(vec: &Vec<S>) -> String
+where
+    S: ToString,
+{
+    vec.iter()
+        .map(|e| str!("1. ") + &e.to_string())
+        .fold(String::new(), |prev, curr| prev + "\n" + &curr)
 }
 
 pub fn bulleted<S>(vec: &Vec<S>) -> String
