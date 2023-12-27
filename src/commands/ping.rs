@@ -1,6 +1,4 @@
-use poise::command;
-use serenity::{model::Timestamp, utils::Color};
-
+use poise::{command, serenity_prelude::{Timestamp, Color}};
 use crate::{Context, Result};
 
 #[command(slash_command, description_localized("en-US", "Pings the bot"))]

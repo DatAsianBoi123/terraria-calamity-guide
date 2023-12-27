@@ -1,5 +1,4 @@
-use poise::command;
-use serenity::utils::Color;
+use poise::{command, serenity_prelude::Color};
 
 use crate::{Context, Result};
 

@@ -1,6 +1,9 @@
-use poise::command;
+use std::sync::Arc;
 
-use crate::{Context, Result, Data, playthrough_data::PlaythroughData, MutableData, issue::Issues};
+use poise::command;
+use tokio::sync::RwLock;
+
+use crate::{Context, Result, playthrough_data::PlaythroughData, issue::Issues, Playthroughs, IssueData};
 
 #[command(slash_command, subcommands("sync"), default_member_permissions = "MANAGE_GUILD", owners_only)]
 pub async fn db(_: Context<'_>) -> Result {
@@ -10,14 +13,16 @@ pub async fn db(_: Context<'_>) -> Result {
 #[command(slash_command, default_member_permissions = "MANAGE_GUILD")]
 async fn sync(ctx: Context<'_>) -> Result {
     ctx.defer_ephemeral().await?;
+
     let mut data_lock = ctx.serenity_context().data.write().await;
-    let playthroughs = PlaythroughData::load(&ctx.data().pool).await;
-    let issues = Issues::load(ctx.http(), &ctx.data().pool).await;
-    data_lock.insert::<Data>(MutableData {
-        playthroughs,
-        issues,
-    });
-    let playthrough_data = &data_lock.get::<Data>().expect("has playthroughs").playthroughs;
+    let pool = &ctx.data().pool;
+    let playthroughs = PlaythroughData::load(pool).await;
+    let issues = Issues::load(ctx.http(), pool).await;
+    data_lock.insert::<Playthroughs>(Arc::new(RwLock::new(playthroughs)));
+    data_lock.insert::<IssueData>(Arc::new(RwLock::new(issues)));
+
+    let playthrough_data = data_lock.get::<Playthroughs>().expect("has playthroughs").clone();
+    let playthrough_data = &playthrough_data.read().await;
     ctx.say(format!("Successfully synced with database\ntotal playthroughs is now {}", playthrough_data.active_playthroughs.len())).await?;
     Ok(())
 }

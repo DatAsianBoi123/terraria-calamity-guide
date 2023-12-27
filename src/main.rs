@@ -1,14 +1,14 @@
 #![deny(unused_crate_dependencies)]
 use shuttle_poise as _;
+use tokio::sync::RwLock;
 
-use std::{fs::{self, File}, net::SocketAddr};
+use std::{fs::{self, File}, net::SocketAddr, sync::Arc};
 
 use commands::{report::report, db::db};
 use issue::Issues;
 use loadout_data::LoadoutData;
-use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus, GuildId, ChannelId, GuildChannel, Interaction, ComponentType, InteractionResponseType}, Event, FrameworkContext, FrameworkBuilder};
+use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus, GuildId, ChannelId, GuildChannel, Interaction, ComponentType, InteractionResponseType, GatewayIntents, TypeMapKey}, Event, FrameworkContext, FrameworkBuilder};
 use rocket::{fs::{FileServer, relative}, routes};
-use serenity::prelude::{GatewayIntents, TypeMapKey};
 
 use shuttle_rocket::RocketService;
 use shuttle_runtime::{CustomError, Service};
@@ -42,13 +42,16 @@ pub struct Data {
     issue_channel: GuildChannel,
 }
 
-pub struct MutableData {
-    playthroughs: PlaythroughData,
-    issues: Issues,
+pub struct Playthroughs;
+
+impl TypeMapKey for Playthroughs {
+    type Value = Arc<RwLock<PlaythroughData>>;
 }
 
-impl TypeMapKey for Data {
-    type Value = MutableData;
+pub struct IssueData;
+
+impl TypeMapKey for IssueData {
+    type Value = Arc<RwLock<Issues>>;
 }
 
 struct PoiseRocketService {
@@ -107,10 +110,8 @@ async fn poise(
                 let mut data_lock = ctx.data.write().await;
                 let playthroughs = PlaythroughData::load(&pool).await;
                 let issues = Issues::load(&ctx.http, &pool).await;
-                data_lock.insert::<Data>(MutableData {
-                    playthroughs,
-                    issues,
-                });
+                data_lock.insert::<Playthroughs>(Arc::new(RwLock::new(playthroughs)));
+                data_lock.insert::<IssueData>(Arc::new(RwLock::new(issues)));
 
                 let guild_id: u64 = secret_store.get("ISSUE_GUILD").and_then(|id| id.parse().ok()).expect("issue guild should be valid and exists");
                 let guild_id = GuildId::from(guild_id);
@@ -122,8 +123,12 @@ async fn poise(
                 let issue_channel = channels.get(&channel_id).expect("channel exists");
 
                 let all_guilds = ctx.cache.guild_count();
-                info!("loaded {} playthroughs", data_lock.get::<Data>().expect("data exists").playthroughs.active_playthroughs.len());
-                info!("loaded {} issues", data_lock.get::<Data>().expect("data exists").issues.issues.len());
+                let playthroughs = data_lock.get::<Playthroughs>().expect("playthroughs exist").clone();
+                let playthroughs = playthroughs.read().await;
+                let issues = data_lock.get::<IssueData>().expect("issues exist").clone();
+                let issues = issues.read().await;
+                info!("loaded {} playthroughs", playthroughs.active_playthroughs.len());
+                info!("loaded {} issues", issues.issues.len());
                 info!("helping playthroughs in {} guilds", all_guilds);
                 info!("ready! logged in as {}", ready.user.tag());
                 Ok(Data {
@@ -148,16 +153,22 @@ async fn event_handler(ctx: &poise::serenity_prelude::Context, event: &Event<'_>
         Event::InteractionCreate {
             interaction: Interaction::MessageComponent(interaction)
         } if interaction.data.component_type == ComponentType::Button && interaction.data.custom_id.starts_with("r-") => {
-            let id: i32 = interaction.data.custom_id[2..].parse().expect("issue id is a number");
+            if let Some(member) = &interaction.member {
+                if let Ok(permissions) = member.permissions(&ctx.cache) {
+                    if !permissions.administrator() { return Ok(()); }
+                    let id: i32 = interaction.data.custom_id[2..].parse().expect("issue id is a number");
 
-            let mut issues = ctx.data.write().await;
-            let issues = &mut issues.get_mut::<Data>().expect("data exists").issues;
-            let issue = issues.resolve(id, &data.pool).await.expect("issue exists");
+                    let data_read = ctx.data.read().await;
+                    let issues = data_read.get::<IssueData>().expect("data exists").clone();
+                    let mut issue_lock = issues.write().await;
+                    let issue = issue_lock.resolve(id, &data.pool).await.expect("issue exists");
 
-            interaction.create_interaction_response(&ctx.http, |r| {
-                r.kind(InteractionResponseType::UpdateMessage)
-                    .interaction_response_data(|edit| edit.set_embed(issue.create_resolved_embed()).components(|c| c))
-            }).await?;
+                    interaction.create_interaction_response(&ctx.http, |r| {
+                        r.kind(InteractionResponseType::UpdateMessage)
+                            .interaction_response_data(|edit| edit.set_embed(issue.create_resolved_embed()).components(|c| c))
+                    }).await?;
+                }
+            }
         }
         _ => {},
     }
@@ -165,7 +176,7 @@ async fn event_handler(ctx: &poise::serenity_prelude::Context, event: &Event<'_>
     Ok(())
 }
 
-pub fn ordered_list<S>(vec: &Vec<S>) -> String
+pub fn ordered_list<S>(vec: &[S]) -> String
 where
     S: ToString,
 {

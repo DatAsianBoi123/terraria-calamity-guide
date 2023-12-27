@@ -1,17 +1,16 @@
 use std::{vec, result::Result as StdResult, convert::Into};
 
-use poise::{command, serenity_prelude::User};
-use serenity::{http::CacheHttp, utils::Color, model::Timestamp, futures::future};
+use poise::{command, serenity_prelude::{User, Color, Timestamp, CacheHttp}};
+use serenity::futures::future;
 use sqlx::types::chrono::Utc;
 
 use crate::{
     Context,
     Result,
-    Data,
     loadout_data::{CalamityClass, Stage, LoadoutData},
     playthrough_data::{FinishPlaythroughError, Player, JoinPlayerError, LeaveError, StartPlaythroughError, KickError, ProgressError, Playthrough},
     str,
-    bulleted, ordered_list,
+    bulleted, ordered_list, Playthroughs,
 };
 
 #[command(
@@ -26,7 +25,8 @@ pub async fn playthrough(_: Context<'_>) -> Result {
 #[command(slash_command, owners_only, ephemeral)]
 async fn list(ctx: Context<'_>) -> Result {
     let data_lock = ctx.serenity_context().data.read().await;
-    let playthroughs = &data_lock.get::<Data>().expect("get data").playthroughs.active_playthroughs;
+    let read_lock = data_lock.get::<Playthroughs>().expect("get data").clone();
+    let playthroughs = &read_lock.read().await.active_playthroughs;
     let owners = future::join_all(playthroughs.iter()
         .map(|(owner, playthrough)| async {
             let owner = owner.to_user(&ctx).await.expect("user exists");
@@ -43,7 +43,8 @@ async fn view(
 ) -> Result {
     let user = other.as_ref().unwrap_or(ctx.author());
     let data_lock = ctx.serenity_context().data.read().await;
-    let data_lock = &data_lock.get::<Data>().expect("work").playthroughs;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let data_lock = &data_lock.read().await;
     if !data_lock.all_users.contains(&user.id) {
         ctx.say(format!("{} not currently in a playthrough", other.map(|_| "That user is").unwrap_or("You are"))).await?;
         return Ok(());
@@ -61,7 +62,7 @@ async fn view(
         c.embed(|embed| {
             embed
                 .title(format!("{}'s Playthrough", owner.name))
-                .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or(String::new()))
+                .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or_default())
                 .field("Players", bulleted(&player_list).to_string(), false)
                 .field("Date Started", match playthrough.started {
                     Some(date) => format!("<t:{}:D>", date.timestamp()),
@@ -81,8 +82,10 @@ async fn view(
 async fn create(ctx: Context<'_>, #[description = "The class you're playing in this playthrough"] class: CalamityClass) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let create_res = data_lock.get_mut::<Data>().expect("work").playthroughs.create(
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let create_res = write_lock.create(
         ctx.author(),
         class,
         &ctx.data().pool,
@@ -100,8 +103,10 @@ async fn create(ctx: Context<'_>, #[description = "The class you're playing in t
 async fn end(ctx: Context<'_>) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let finish_res = data_lock.get_mut::<Data>().expect("work").playthroughs.end(ctx.author(), &ctx.data().pool).await;
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let finish_res = write_lock.end(ctx.author(), &ctx.data().pool).await;
     match finish_res {
         Ok(playthrough) => {
             let time_spent = playthrough.started
@@ -151,13 +156,14 @@ async fn end(ctx: Context<'_>) -> Result {
 async fn start(ctx: Context<'_>) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let data = &mut data_lock.get_mut::<Data>().expect("work").playthroughs;
-    let start_res = data.start(ctx.author(), &ctx.data().pool).await;
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let start_res = write_lock.start(ctx.author(), &ctx.data().pool).await;
 
     match start_res {
         Ok(()) => {
-            let playthrough = data.active_playthroughs.get(&ctx.author().id).expect("thing exists");
+            let playthrough = write_lock.active_playthroughs.get(&ctx.author().id).expect("thing exists");
             let dm_results = resend_loadouts(ctx, playthrough, &ctx.data().loadouts).await;
             let error_futures = dm_results.into_iter().map(|(user, dm_res)| async move {
                 if dm_res.is_err() {
@@ -184,8 +190,10 @@ async fn join(
 ) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let add_res = data_lock.get_mut::<Data>().expect("work").playthroughs.join_player(
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let add_res = write_lock.join_player(
         &owner,
         Player { id: ctx.author().id, class },
         &ctx.data().pool,
@@ -204,8 +212,10 @@ async fn join(
 async fn kick(ctx: Context<'_>, #[description = "The player you want to kick"] player: User) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let kick_res = data_lock.get_mut::<Data>().expect("work").playthroughs.kick(ctx.author(), &player, &ctx.data().pool).await;
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let kick_res = write_lock.kick(ctx.author(), &player, &ctx.data().pool).await;
     match kick_res {
         Ok(()) => ctx.say(format!("Successfully kicked {} from your playthrough", player)).await?,
         Err(KickError::NotOwner) => ctx.say("You are not the owner of the playthrough you are in").await?,
@@ -221,8 +231,10 @@ async fn kick(ctx: Context<'_>, #[description = "The player you want to kick"] p
 async fn leave(ctx: Context<'_>) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let leave_res = data_lock.get_mut::<Data>().expect("work").playthroughs.leave(ctx.author(), &ctx.data().pool).await;
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let leave_res = write_lock.leave(ctx.author(), &ctx.data().pool).await;
     match leave_res {
         Ok(playthrough) => ctx.say(format!("Successfully left <@{}>'s playthrough", playthrough.owner)).await?,
         Err(LeaveError::NotInPlaythrough) => ctx.say("You are not in a playthrough").await?,
@@ -239,8 +251,10 @@ async fn progress(
 ) -> Result {
     ctx.defer().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let progress_res = data_lock.get_mut::<Data>().expect("work").playthroughs.progress(ctx.author(), stage, &ctx.data().pool).await;
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+    let mut write_lock = data_lock.write().await;
+    let progress_res = write_lock.progress(ctx.author(), stage, &ctx.data().pool).await;
     match progress_res {
         Ok(playthrough) => {
             if playthrough.started.is_some() {
@@ -256,7 +270,7 @@ async fn progress(
     Ok(())
 }
 
-async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadouts: &LoadoutData) -> Vec<(User, StdResult<(), serenity::Error>)> {
+async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadouts: &LoadoutData) -> Vec<(User, StdResult<(), poise::serenity_prelude::Error>)> {
     let dm_futures = playthrough.players.iter().map(|player| {
         let http = http.http();
         async move {

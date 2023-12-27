@@ -1,6 +1,6 @@
 use poise::command;
 
-use crate::{Context, Result, loadout_data::{CalamityClass, Stage}, Data};
+use crate::{Context, Result, loadout_data::{CalamityClass, Stage}, IssueData};
 
 #[command(slash_command, description_localized("en-US", "Reports a problem with a loadout"), ephemeral)]
 pub async fn report(
@@ -10,8 +10,9 @@ pub async fn report(
     #[description = "The incorrect phrase"] incorrect: String,
     #[description = "The phrase that should replace the incorrect one"] correct: String,
 ) -> Result {
-    let mut issues = ctx.serenity_context().data.write().await;
-    let issues = &mut issues.get_mut::<Data>().expect("data exists").issues;
+    let data_lock = ctx.serenity_context().data.read().await;
+    let data_lock = data_lock.get::<IssueData>().expect("data exists").clone();
+    let mut issues = data_lock.write().await;
     let issue = issues.create(ctx.author(), class, stage, incorrect, correct, &ctx.data().pool).await;
 
     ctx.data().issue_channel.send_message(ctx, |c| c.set_embed(issue.create_embed()).set_components(issue.create_components())).await?;

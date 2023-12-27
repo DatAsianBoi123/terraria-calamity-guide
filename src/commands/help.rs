@@ -1,5 +1,4 @@
-use poise::command;
-use serenity::{utils::Color, model::Timestamp};
+use poise::{command, serenity_prelude::{Color, Timestamp}};
 
 use crate::{Context, Result};
 
@@ -8,7 +7,7 @@ pub async fn help(ctx: Context<'_>) -> Result {
     ctx.send(|m| {
         m.embed(|e| {
             e.title("Help")
-                .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or(String::new()))
+                .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or_default())
                 .description("This bot is designed to help you on your next Calamity playthrough by showing you different loadouts from \
                              various stages of progression. Additionally, you will also be given information on what permanent upgrades \
                              and healing potions are available to you at that stage of the game.\n\

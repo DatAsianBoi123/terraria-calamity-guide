@@ -3,9 +3,8 @@ use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display};
 
 use convert_case::{Casing, Case};
 use num_derive::FromPrimitive;
-use poise::{ChoiceParameter, serenity_prelude::User};
+use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp}};
 use serde::Deserialize;
-use serenity::{builder::CreateEmbed, utils::Color, model::Timestamp};
 use crate::{str, bulleted_array, bulleted};
 use linked_hash_map::LinkedHashMap;
 
@@ -23,7 +22,7 @@ impl StageData {
         let loadout = self.loadouts.get(&class).expect("loadout exists for stage");
         embed
             .title(format!("{class} - {stage}"))
-            .author(|a| a.name(&author.name).icon_url(author.avatar_url().unwrap_or(String::new())))
+            .author(|a| a.name(&author.name).icon_url(author.avatar_url().unwrap_or_default()))
             .thumbnail(stage.img())
             .field("<:armor:1129548766857404576> Armor", &loadout.armor, true)
             .field("<:weapons:1129556916805304410> Weapons", bulleted_array(&loadout.weapons), true)
