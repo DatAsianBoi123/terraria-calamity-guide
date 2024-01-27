@@ -88,7 +88,7 @@ impl PlaythroughData {
         }
 
         sqlx::query("DELETE FROM playthroughs WHERE owner = $1")
-            .bind(BigDecimal::from_u64(owner.id.0).expect("big decimal"))
+            .bind(BigDecimal::from_u64(owner.id.get()).expect("big decimal"))
             .execute(pool).await.expect("query works");
 
         // make sure id increments correctly
@@ -121,7 +121,7 @@ impl PlaythroughData {
         let now = Utc::now().naive_utc();
         sqlx::query("UPDATE playthroughs SET started = $1 WHERE owner = $2")
             .bind(now)
-            .bind(BigDecimal::from_u64(owner.id.0).expect("owner id is a valid big decimal"))
+            .bind(BigDecimal::from_u64(owner.id.get()).expect("owner id is a valid big decimal"))
             .execute(pool).await.expect("query works");
 
         playthrough.started = Some(now);
@@ -141,7 +141,7 @@ impl PlaythroughData {
 
         sqlx::query("UPDATE playthroughs SET players = players || $1 WHERE owner = $2")
             .bind(player.sql_type())
-            .bind(BigDecimal::from_u64(owner.id.0).expect("id is a big decimal"))
+            .bind(BigDecimal::from_u64(owner.id.get()).expect("id is a big decimal"))
             .execute(pool).await.expect("query is valid");
 
         self.all_users.insert(player.id);
@@ -212,7 +212,7 @@ impl PlaythroughData {
 
                 sqlx::query("UPDATE playthroughs SET stage = $1 WHERE owner = $2")
                     .bind(new_stage as i16)
-                    .bind(BigDecimal::from_u64(owner.id.0).expect("owner id is big decimal"))
+                    .bind(BigDecimal::from_u64(owner.id.get()).expect("owner id is big decimal"))
                     .execute(pool).await.expect("query works");
 
                 playthrough.stage = new_stage;
@@ -235,14 +235,14 @@ impl PlaythroughData {
             for player in raw_players {
                 let player_id = player.id.to_u64().expect("player id is valid u64");
                 players.push(Player {
-                    id: UserId(player_id),
+                    id: UserId::new(player_id),
                     class: FromPrimitive::from_i16(player.class).expect("player class is a valid class"),
                 });
-                all_users.insert(UserId(player_id));
+                all_users.insert(UserId::new(player_id));
             }
             let owner_id = owner_id.to_u64().expect("owner snowflake is a valid u64");
             let stage = FromPrimitive::from_i16(stage).expect("stage is a valid stage");
-            playthroughs.insert(UserId(owner_id), Playthrough { owner: UserId(owner_id), players, stage, started });
+            playthroughs.insert(UserId::new(owner_id), Playthrough { owner: UserId::new(owner_id), players, stage, started });
         }
 
         PlaythroughData {
@@ -261,7 +261,7 @@ pub struct Playthrough {
 
 impl Playthrough {
     fn raw_data(&self) -> RawPlaythrough {
-        let owner = BigDecimal::from_u64(self.owner.0).expect("id is a valid big decimal");
+        let owner = BigDecimal::from_u64(self.owner.get()).expect("id is a valid big decimal");
         (owner, self.players.iter().map(Player::sql_type).collect(), self.stage as i16, self.started)
     }
 }
@@ -273,7 +273,7 @@ pub struct Player {
 
 impl Player {
     pub fn raw_data(&self) -> (BigDecimal, i16) {
-        (BigDecimal::from_u64(self.id.0).expect("id is a valid big decimal"), self.class as i16)
+        (BigDecimal::from_u64(self.id.get()).expect("id is a valid big decimal"), self.class as i16)
     }
 
     fn sql_type(&self) -> RawPlayer {

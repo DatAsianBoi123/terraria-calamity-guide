@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use num_traits::{ToPrimitive, FromPrimitive};
-use poise::serenity_prelude::{Http, UserId, User, ButtonStyle, Color, CreateEmbed, CreateComponents, Timestamp};
+use poise::{serenity_prelude::{Http, UserId, User, ButtonStyle, Color, CreateEmbed, Timestamp, CreateActionRow, CreateButton, CreateEmbedFooter}, ChoiceParameter};
 use rand::Rng;
 use sqlx::{PgPool, types::{BigDecimal, chrono::{NaiveDateTime, Utc}}};
 use tracing::info;
@@ -35,7 +35,7 @@ impl Issues {
 
         sqlx::query("INSERT INTO issues(id, author, class, stage, incorrect, correct, created_at) VALUES($1, $2, $3, $4, $5, $6, $7)")
             .bind(issue.id)
-            .bind(BigDecimal::from_u64(issue.author.id.0).expect("author is valid big decimal"))
+            .bind(BigDecimal::from_u64(issue.author.id.get()).expect("author is valid big decimal"))
             .bind(issue.class as i16)
             .bind(issue.stage as i16)
             .bind(&issue.incorrect)
@@ -66,7 +66,7 @@ impl Issues {
             .fetch_all(pool).await.expect("query is correct");
 
         for raw_issue in issue_array {
-            let author = raw_issue.1.to_u64().map(|id| UserId(id).to_user(http)).expect("id is u64").await.expect("author is user");
+            let author = raw_issue.1.to_u64().map(|id| UserId::new(id).to_user(http)).expect("id is u64").await.expect("author is user");
             let class = FromPrimitive::from_i16(raw_issue.2).expect("class number is valid class");
             let stage = FromPrimitive::from_i16(raw_issue.3).expect("stage number is valid stage");
             let issue = Issue {
@@ -99,40 +99,30 @@ pub struct Issue {
 
 impl Issue {
     pub fn create_embed(&self) -> CreateEmbed {
-        let mut embed = CreateEmbed::default();
-
-        embed
+        CreateEmbed::default()
             .title(format!("Issue {:x}", self.id))
-            .field("Class", self.class, true)
-            .field("Stage", self.stage, true)
+            .field("Class", self.class.name(), true)
+            .field("Stage", self.stage.name(), true)
             .field("** **", "** **", false)
             .field("Incorrect Phrase", &self.incorrect, true)
             .field("Correct Phrase", &self.correct, true)
             .color(Color::ORANGE)
-            .footer(|f| f.text(format!("Created by {}", self.author.name)))
-            .timestamp(Timestamp::from_unix_timestamp(self.created_at.timestamp()).expect("timestamp is valid"));
-
-        embed
+            .footer(CreateEmbedFooter::new(format!("Created by {}", self.author.name)))
+            .timestamp(Timestamp::from_unix_timestamp(self.created_at.timestamp()).expect("timestamp is valid"))
     }
 
-    pub fn create_components(&self) -> CreateComponents {
-        let mut component = CreateComponents::default();
-
-        component.create_action_row(|row| {
-            row.create_button(|btn| btn.style(ButtonStyle::Success).label("Resolve").custom_id(format!("r-{}", self.id)))
-        });
-
-        component
+    pub fn create_components(&self) -> Vec<CreateActionRow> {
+        vec![
+            CreateActionRow::Buttons(vec![
+                CreateButton::new(format!("r-{}", self.id)).style(ButtonStyle::Success).label("Resolve"),
+            ]),
+        ]
     }
 
     pub fn create_resolved_embed(&self) -> CreateEmbed {
-        let mut embed = self.create_embed();
-
-        embed
+        self.create_embed()
             .title(format!("Resolved {:x}", self.id))
-            .color(Color::from_rgb(21, 209, 49));
-
-        embed
+            .color(Color::from_rgb(21, 209, 49))
     }
 }
 

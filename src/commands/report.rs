@@ -1,4 +1,4 @@
-use poise::command;
+use poise::{command, serenity_prelude::CreateMessage};
 
 use crate::{Context, Result, loadout_data::{CalamityClass, Stage}, IssueData};
 
@@ -15,7 +15,10 @@ pub async fn report(
     let mut issues = data_lock.write().await;
     let issue = issues.create(ctx.author(), class, stage, incorrect, correct, &ctx.data().pool).await;
 
-    ctx.data().issue_channel.send_message(ctx, |c| c.set_embed(issue.create_embed()).set_components(issue.create_components())).await?;
+    ctx.data().issue_channel.send_message(ctx, CreateMessage::new()
+        .embed(issue.create_embed())
+        .components(issue.create_components()))
+        .await?;
 
     ctx.say("Successfully reported your issue!").await?;
 

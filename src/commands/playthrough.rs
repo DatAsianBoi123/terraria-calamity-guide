@@ -1,7 +1,7 @@
 use std::{vec, result::Result as StdResult, convert::Into};
 
-use poise::{command, serenity_prelude::{User, Color, Timestamp, CacheHttp}};
-use serenity::futures::future;
+use poise::{command, serenity_prelude::{User, Color, Timestamp, CacheHttp, CreateEmbed, CreateMessage, CreateEmbedFooter}, ChoiceParameter, CreateReply};
+use rocket::futures::future;
 use sqlx::types::chrono::Utc;
 
 use crate::{
@@ -30,7 +30,7 @@ async fn list(ctx: Context<'_>) -> Result {
     let owners = future::join_all(playthroughs.iter()
         .map(|(owner, playthrough)| async {
             let owner = owner.to_user(&ctx).await.expect("user exists");
-            format!("{} ({} total players) - {}", owner.name, playthrough.players.len(), playthrough.stage)
+            format!("{} ({} total players) - {}", owner.name, playthrough.players.len(), playthrough.stage.name())
         })).await;
     ctx.say(ordered_list(&owners)).await?;
     Ok(())
@@ -57,23 +57,25 @@ async fn view(
 
     let owner = playthrough.owner.to_user(ctx).await.expect("owner is a user");
     let player_list = future::join_all(playthrough.players.iter()
-        .map(|p| async move { format!("{} - {}{}", p.id.to_user(ctx).await.expect("player is user").name, p.class, p.class.emoji()) })).await;
-    ctx.send(|c| {
-        c.embed(|embed| {
-            embed
-                .title(format!("{}'s Playthrough", owner.name))
-                .thumbnail(ctx.serenity_context().cache.current_user().avatar_url().unwrap_or_default())
-                .field("Players", bulleted(&player_list).to_string(), false)
-                .field("Date Started", match playthrough.started {
-                    Some(date) => format!("<t:{}:D>", date.timestamp()),
-                    None => str!("Playthrough hasn't started yet"),
-                }, true)
-                .field("Game Stage", playthrough.stage, true)
-                .color(Color::FOOYOO)
-                .footer(|f| f.text("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
-                .timestamp(Timestamp::now())
-        })
-    }).await?;
+        .map(|p| async move { format!("{} - {}{}", p.id.to_user(ctx).await.expect("player is user").name, p.class.name(), p.class.emoji()) })).await;
+
+    let current_user = ctx.serenity_context().cache.current_user().clone();
+
+    ctx.send(CreateReply::default()
+        .embed(CreateEmbed::new()
+            .title(format!("{}'s Playthrough", owner.name))
+            .thumbnail(current_user.avatar_url().unwrap_or_default())
+            .field("Players", bulleted(&player_list).to_string(), false)
+            .field("Date Started", match playthrough.started {
+                Some(date) => format!("<t:{}:D>", date.timestamp()),
+                None => str!("Playthrough hasn't started yet"),
+            }, true)
+            .field("Game Stage", playthrough.stage.name(), true)
+            .color(Color::FOOYOO)
+            .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
+            .timestamp(Timestamp::now())
+        )
+    ).await?;
 
     Ok(())
 }
@@ -260,7 +262,7 @@ async fn progress(
             if playthrough.started.is_some() {
                 resend_loadouts(ctx, playthrough, &ctx.data().loadouts).await;
             }
-            ctx.say(format!("Progressed to stage {}", playthrough.stage)).await?
+            ctx.say(format!("Progressed to stage {}", playthrough.stage.name())).await?
         },
         Err(ProgressError::NotInPlaythrough) => ctx.say("You are not in a playthrough").await?,
         Err(ProgressError::NotOwner) => ctx.say("You are not the owner of the playthrough you are in").await?,
@@ -276,8 +278,8 @@ async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadou
         async move {
             let user = player.id.to_user(&http).await.expect("player id is a user");
             let stage_data = loadouts.get(&playthrough.stage).expect("loadout exists");
-            let dm_res = user.direct_message(&http, |c| c
-                                .embed(|e| stage_data.format_embed(e, &user, player.class, playthrough.stage))).await.map(|_| ());
+            let dm_res = user.direct_message(&http, CreateMessage::new()
+                .embed(stage_data.create_embed(&user, player.class, playthrough.stage))).await.map(|_| ());
             (user, dm_res)
         }
     });

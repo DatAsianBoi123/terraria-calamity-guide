@@ -1,4 +1,4 @@
-use poise::command;
+use poise::{command, CreateReply};
 
 use crate::{Context, Result, loadout_data::{CalamityClass, Stage}};
 
@@ -15,7 +15,7 @@ pub async fn view_loadout(
     let stage = stage.unwrap_or(Stage::PreBoss);
     if let Context::Application(ctx) = ctx {
         let stage_data = ctx.data().loadouts.get(&stage).expect("stage exists");
-        ctx.send(|f| f.embed(|e| stage_data.format_embed(e, ctx.author(), class, stage))).await?;
+        ctx.send(CreateReply::default().embed(stage_data.create_embed(ctx.author(), class, stage))).await?;
     }
     Ok(())
 }

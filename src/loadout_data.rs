@@ -3,7 +3,7 @@ use std::{collections::HashMap, io::BufReader, fs::File, fmt::Display};
 
 use convert_case::{Casing, Case};
 use num_derive::FromPrimitive;
-use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp}};
+use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
 use serde::Deserialize;
 use crate::{str, bulleted_array, bulleted};
 use linked_hash_map::LinkedHashMap;
@@ -18,29 +18,30 @@ pub struct StageData {
 }
 
 impl StageData {
-    pub fn format_embed<'a>(&self, embed: &'a mut CreateEmbed, author: &User, class: CalamityClass, stage: Stage) -> &'a mut CreateEmbed {
+    pub fn create_embed(&self, author: &User, class: CalamityClass, stage: Stage) -> CreateEmbed {
         let loadout = self.loadouts.get(&class).expect("loadout exists for stage");
-        embed
-            .title(format!("{class} - {stage}"))
-            .author(|a| a.name(&author.name).icon_url(author.avatar_url().unwrap_or_default()))
+        let mut embed = CreateEmbed::new();
+        embed = embed
+            .title(format!("{} - {}", class.name(), stage.name()))
+            .author(CreateEmbedAuthor::new(&author.name).icon_url(author.avatar_url().unwrap_or_default()))
             .thumbnail(stage.img())
             .field("<:armor:1129548766857404576> Armor", &loadout.armor, true)
             .field("<:weapons:1129556916805304410> Weapons", bulleted_array(&loadout.weapons), true)
             .field("<:equipment:1129549501712048178> Equipment", bulleted(&loadout.equipment), true)
             .color(Color::DARK_RED)
-            .footer(|f| f.text("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
+            .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
             .timestamp(Timestamp::now());
 
         if !loadout.extra.is_empty() {
-            embed
+            embed = embed
                 .field("** **", "** **", false) // force next field to be on next row
                 .fields(loadout.extra.iter().map(|(title, list)| (title, bulleted(list), true)));
         }
-        embed
+        embed = embed
             .field("** **", "** **", false)
             .field("<:healing_potion:1129549725331370075> Healing Potion", self.potion.to_string(), true);
         if let Some(powerups) = &self.powerups {
-            embed.field("<:powerups:1129550131000254614> Permanent Powerups", bulleted(powerups), true);
+            embed = embed.field("<:powerups:1129550131000254614> Permanent Powerups", bulleted(powerups), true);
         }
         embed
     }

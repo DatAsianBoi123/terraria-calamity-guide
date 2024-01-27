@@ -1,5 +1,6 @@
 #![deny(unused_crate_dependencies)]
-use shuttle_poise as _;
+use poise::serenity_prelude::{self as serenity, CreateInteractionResponse, CreateInteractionResponseMessage};
+
 use tokio::sync::RwLock;
 
 use std::{fs::{self, File}, net::SocketAddr, sync::Arc};
@@ -7,7 +8,24 @@ use std::{fs::{self, File}, net::SocketAddr, sync::Arc};
 use commands::{report::report, db::db};
 use issue::Issues;
 use loadout_data::LoadoutData;
-use poise::{samples::register_globally, FrameworkOptions, serenity_prelude::{Activity, OnlineStatus, GuildId, ChannelId, GuildChannel, Interaction, ComponentType, InteractionResponseType, GatewayIntents, TypeMapKey}, Event, FrameworkContext, FrameworkBuilder};
+use poise::{
+    samples::register_globally,
+    FrameworkOptions,
+    FrameworkContext,
+};
+use serenity::{
+    ActivityData,
+    OnlineStatus,
+    GuildId,
+    ChannelId,
+    GuildChannel,
+    Interaction,
+    GatewayIntents,
+    prelude::TypeMapKey,
+    ComponentInteractionDataKind,
+    Client,
+    FullEvent,
+};
 use rocket::{fs::{FileServer, relative}, routes};
 
 use shuttle_rocket::RocketService;
@@ -55,7 +73,7 @@ impl TypeMapKey for IssueData {
 }
 
 struct PoiseRocketService {
-    pub poise: FrameworkBuilder<Data, Box<(dyn std::error::Error + Send + Sync + 'static)>>,
+    pub poise: Client,
     pub rocket: RocketService,
 }
 
@@ -65,7 +83,7 @@ impl Service for PoiseRocketService {
         let binder = self.rocket.bind(addr);
 
         tokio::select! {
-            _ = self.poise.run() => {},
+            _ = self.poise.start() => {},
             _ = binder => {},
         }
 
@@ -100,12 +118,10 @@ async fn poise(
             },
             ..Default::default()
         })
-        .token(token)
-        .intents(GatewayIntents::GUILDS)
         .setup(|ctx, ready, framework| {
             Box::pin(async move {
                 register_globally(ctx, &framework.options().commands).await?;
-                ctx.set_presence(Some(Activity::playing("TModLoader")), OnlineStatus::Online).await;
+                ctx.set_presence(Some(ActivityData::playing("TModLoader")), OnlineStatus::Online);
 
                 let mut data_lock = ctx.data.write().await;
                 let playthroughs = PlaythroughData::load(&pool).await;
@@ -137,38 +153,40 @@ async fn poise(
                     issue_channel: issue_channel.clone(),
                 })
             })
-        });
+        })
+        .build();
 
+    let client = Client::builder(token, GatewayIntents::GUILDS)
+        .framework(framework)
+        .await.expect("create client");
 
     let rocket = rocket::build()
         .mount("/", FileServer::from(relative!("static/public")))
         .mount("/", routes![invite])
         .into();
 
-    Ok(PoiseRocketService { poise: framework, rocket })
+    Ok(PoiseRocketService { poise: client, rocket })
 }
 
-async fn event_handler(ctx: &poise::serenity_prelude::Context, event: &Event<'_>, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> Result {
+async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> Result {
     match event {
-        Event::InteractionCreate {
-            interaction: Interaction::MessageComponent(interaction)
-        } if interaction.data.component_type == ComponentType::Button && interaction.data.custom_id.starts_with("r-") => {
-            if let Some(member) = &interaction.member {
-                if let Ok(permissions) = member.permissions(&ctx.cache) {
-                    if !permissions.administrator() { return Ok(()); }
-                    let id: i32 = interaction.data.custom_id[2..].parse().expect("issue id is a number");
+        FullEvent::InteractionCreate { interaction: Interaction::Component(interaction) }
+            if matches!(interaction.data.kind, ComponentInteractionDataKind::Button) && interaction.data.custom_id.starts_with("r-") => {
+                if let Some(member) = &interaction.member {
+                    if let Ok(permissions) = member.permissions(&ctx.cache) {
+                        if !permissions.administrator() { return Ok(()); }
+                        let id: i32 = interaction.data.custom_id[2..].parse().expect("issue id is a number");
 
-                    let data_read = ctx.data.read().await;
-                    let issues = data_read.get::<IssueData>().expect("data exists").clone();
-                    let mut issue_lock = issues.write().await;
-                    let issue = issue_lock.resolve(id, &data.pool).await.expect("issue exists");
+                        let data_read = ctx.data.read().await;
+                        let issues = data_read.get::<IssueData>().ok_or("issues poisoned")?.clone();
+                        let mut issue_lock = issues.write().await;
+                        let issue = issue_lock.resolve(id, &data.pool).await.map_err(|_| "issue not found")?;
 
-                    interaction.create_interaction_response(&ctx.http, |r| {
-                        r.kind(InteractionResponseType::UpdateMessage)
-                            .interaction_response_data(|edit| edit.set_embed(issue.create_resolved_embed()).components(|c| c))
-                    }).await?;
+                        interaction.create_response(ctx, CreateInteractionResponse::UpdateMessage(
+                                CreateInteractionResponseMessage::new().embed(issue.create_resolved_embed()).components(Vec::with_capacity(0))
+                        )).await?;
+                    }
                 }
-            }
         }
         _ => {},
     }

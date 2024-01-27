@@ -68,7 +68,7 @@ pub async fn view_item(
         return Ok(());
     }
     let wiki_page = get_wiki_page(&request.text().await.expect("text"));
-    ctx.say(format!("{} in wiki {wiki}", wiki_page.item_name)).await?;
+    ctx.say(format!("{} in wiki {}", wiki_page.item_name, wiki.name())).await?;
     Ok(())
 }
 
