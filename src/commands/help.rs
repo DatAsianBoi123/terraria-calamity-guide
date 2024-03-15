@@ -1,4 +1,4 @@
-use poise::{command, serenity_prelude::{Color, Timestamp, CreateEmbed, CreateEmbedFooter}, CreateReply};
+use poise::{command, serenity_prelude::{Color, Timestamp, CreateEmbed, CreateEmbedFooter, CreateEmbedAuthor}, CreateReply};
 
 use crate::{Context, Result};
 
