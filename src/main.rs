@@ -3,7 +3,7 @@ use poise::serenity_prelude::{self as serenity, CreateInteractionResponse, Creat
 
 use tokio::sync::RwLock;
 
-use std::{fs::{self, File}, net::SocketAddr, sync::Arc};
+use std::{fs::{self, File}, net::SocketAddr, sync::Arc, result::Result};
 
 use commands::{report::report, db::db};
 use issue::Issues;
@@ -51,7 +51,7 @@ macro_rules! str {
 }
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
-pub type Result = std::result::Result<(), Error>;
+pub type PoiseResult = Result<(), Error>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub struct Data {
@@ -79,7 +79,7 @@ struct PoiseRocketService {
 
 #[shuttle_runtime::async_trait]
 impl Service for PoiseRocketService {
-    async fn bind(mut self, addr: SocketAddr) -> std::result::Result<(), shuttle_runtime::Error> {
+    async fn bind(mut self, addr: SocketAddr) -> Result<(), shuttle_runtime::Error> {
         let binder = self.rocket.bind(addr);
 
         tokio::select! {
@@ -97,7 +97,7 @@ async fn poise(
     #[shuttle_shared_db::Postgres(
         local_uri = "postgres://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb"
     )] pool: PgPool,
-) -> std::result::Result<PoiseRocketService, shuttle_runtime::Error> {
+) -> Result<PoiseRocketService, shuttle_runtime::Error> {
     let token = secret_store.get("TOKEN").expect("TOKEN not found");
 
     let schema = fs::read_to_string("static/schema.sql").expect("file exists");
@@ -168,7 +168,7 @@ async fn poise(
     Ok(PoiseRocketService { poise: client, rocket })
 }
 
-async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> Result {
+async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> PoiseResult {
     match event {
         FullEvent::InteractionCreate { interaction: Interaction::Component(interaction) }
             if matches!(interaction.data.kind, ComponentInteractionDataKind::Button) && interaction.data.custom_id.starts_with("r-") => {
