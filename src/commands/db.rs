@@ -3,15 +3,15 @@ use std::sync::Arc;
 use poise::command;
 use tokio::sync::RwLock;
 
-use crate::{Context, Result, playthrough_data::PlaythroughData, issue::Issues, Playthroughs, IssueData};
+use crate::{Context, PoiseResult, playthrough_data::PlaythroughData, issue::Issues, Playthroughs, IssueData};
 
 #[command(slash_command, subcommands("sync"), default_member_permissions = "MANAGE_GUILD", owners_only)]
-pub async fn db(_: Context<'_>) -> Result {
+pub async fn db(_: Context<'_>) -> PoiseResult {
     Ok(())
 }
 
 #[command(slash_command, default_member_permissions = "MANAGE_GUILD")]
-async fn sync(ctx: Context<'_>) -> Result {
+async fn sync(ctx: Context<'_>) -> PoiseResult {
     ctx.defer_ephemeral().await?;
 
     let mut data_lock = ctx.serenity_context().data.write().await;

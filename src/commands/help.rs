@@ -1,9 +1,9 @@
-use poise::{command, serenity_prelude::{Color, Timestamp, CreateEmbed, CreateEmbedFooter, CreateEmbedAuthor}, CreateReply};
+use poise::{command, serenity_prelude::{Color, Timestamp, CreateEmbed, CreateEmbedFooter}, CreateReply};
 
-use crate::{Context, Result};
+use crate::{Context, PoiseResult};
 
 #[command(slash_command, description_localized("en-US", "Displays the help page"))]
-pub async fn help(ctx: Context<'_>) -> Result {
+pub async fn help(ctx: Context<'_>) -> PoiseResult {
     let current_user = ctx.serenity_context().cache.current_user().clone();
     ctx.send(CreateReply::default()
         .embed(CreateEmbed::new()

@@ -1,13 +1,17 @@
 use std::{collections::{HashMap, HashSet}, vec::Vec, convert::Into};
 
-use num_traits::{ToPrimitive, FromPrimitive};
+use multimap::MultiMap;
+use num_traits::{FromPrimitive, ToPrimitive};
 use poise::serenity_prelude::{UserId, User};
-use sqlx::{PgPool, types::{BigDecimal, chrono::{NaiveDateTime, Utc}}, postgres::{PgTypeInfo, PgHasArrayType}};
+use serde::de::Error;
+use sqlx::{PgPool, types::{BigDecimal, chrono::{NaiveDateTime, Utc}}};
 use tracing::info;
 
 use crate::loadout_data::{CalamityClass, Stage};
 
-type RawPlaythrough = (BigDecimal, Vec<RawPlayer>, i16, Option<NaiveDateTime>);
+type RawPlaythrough = (BigDecimal, i16, Option<NaiveDateTime>);
+
+type RawPlayer = (BigDecimal, BigDecimal, i16);
 
 pub struct InPlaythroughError;
 
@@ -55,19 +59,25 @@ impl PlaythroughData {
     pub async fn create(&mut self, owner: &User, class: CalamityClass, pool: &PgPool) -> Result<&Playthrough, InPlaythroughError> {
         if self.all_users.contains(&owner.id) { return Err(InPlaythroughError) }
 
+        let owner_id = BigDecimal::from(owner.id.get());
+
+        sqlx::query("INSERT INTO playthroughs(owner, stage) VALUES ($1, $2)")
+            .bind(owner_id.clone())
+            .bind(Stage::default() as i16)
+            .execute(pool).await.expect("valid query");
+
+        sqlx::query("INSERT INTO playthrough_players(playthrough_owner, user_id, class) VALUES ($1, $2, $3)")
+            .bind(owner_id.clone())
+            .bind(owner_id)
+            .bind(class as i16)
+            .execute(pool).await.expect("value query");
+
         let playthrough = Playthrough {
             owner: owner.id,
-            players: vec![Player { id: owner.id, class }],
-            stage: Stage::PreBoss,
+            players: vec![Player { user_id: owner.id, class }],
+            stage: Default::default(),
             started: None,
         };
-        let playthrough_data: RawPlaythrough = playthrough.raw_data();
-
-        sqlx::query("INSERT INTO playthroughs(owner, players, stage) VALUES ($1, ARRAY[$2], $3)")
-            .bind(playthrough_data.0)
-            .bind(&playthrough_data.1[0])
-            .bind(playthrough_data.2)
-            .execute(pool).await.expect("valid query");
 
         let owner_id = playthrough.owner;
         self.active_playthroughs.insert(owner_id, playthrough);
@@ -88,16 +98,12 @@ impl PlaythroughData {
         }
 
         sqlx::query("DELETE FROM playthroughs WHERE owner = $1")
-            .bind(BigDecimal::from_u64(owner.id.get()).expect("big decimal"))
-            .execute(pool).await.expect("query works");
-
-        // make sure id increments correctly
-        sqlx::query("SELECT setval(pg_get_serial_sequence('playthroughs', 'id'), COALESCE(max(id) + 1, 1), false) FROM playthroughs")
+            .bind(BigDecimal::from(owner.id.get()))
             .execute(pool).await.expect("query works");
 
         let playthrough = self.active_playthroughs.remove(&owner.id).expect("owner is in playthrough");
         playthrough.players.iter().for_each(|player| {
-            self.all_users.remove(&player.id);
+            self.all_users.remove(&player.user_id);
         });
 
         Ok(playthrough)
@@ -106,13 +112,8 @@ impl PlaythroughData {
     pub async fn start(&mut self, owner: &User, pool: &PgPool) -> Result<(), StartPlaythroughError> {
         let playthrough = match self.active_playthroughs.get_mut(&owner.id) {
             Some(playthrough) => Ok(playthrough),
-            None => {
-                if self.all_users.contains(&owner.id) {
-                    Err(StartPlaythroughError::NotOwner)
-                } else {
-                    Err(StartPlaythroughError::NotInPlaythrough)
-                }
-            },
+            None if self.all_users.contains(&owner.id) => Err(StartPlaythroughError::NotOwner),
+            None => Err(StartPlaythroughError::NotInPlaythrough),
         }?;
         if playthrough.started.is_some() {
             return Err(StartPlaythroughError::AlreadyStarted)
@@ -121,7 +122,7 @@ impl PlaythroughData {
         let now = Utc::now().naive_utc();
         sqlx::query("UPDATE playthroughs SET started = $1 WHERE owner = $2")
             .bind(now)
-            .bind(BigDecimal::from_u64(owner.id.get()).expect("owner id is a valid big decimal"))
+            .bind(BigDecimal::from(owner.id.get()))
             .execute(pool).await.expect("query works");
 
         playthrough.started = Some(now);
@@ -130,42 +131,36 @@ impl PlaythroughData {
     }
 
     pub async fn join_player(&mut self, owner: &User, player: Player, pool: &PgPool) -> Result<(), JoinPlayerError> {
-        if !self.active_playthroughs.contains_key(&owner.id) {
-            return if self.all_users.contains(&owner.id) {
-                Err(JoinPlayerError::PlayerNotOwner)
-            } else {
-                Err(JoinPlayerError::PlayerNotInPlaythrough)
-            }
-        }
-        if self.all_users.contains(&player.id) { return Err(JoinPlayerError::AlreadyInPlaythrough) }
+        let owner_id = owner.id;
+        if self.all_users.contains(&player.user_id) { return Err(JoinPlayerError::AlreadyInPlaythrough) }
+        if !self.all_users.contains(&owner_id) { return Err(JoinPlayerError::PlayerNotInPlaythrough) };
 
-        sqlx::query("UPDATE playthroughs SET players = players || $1 WHERE owner = $2")
-            .bind(player.sql_type())
-            .bind(BigDecimal::from_u64(owner.id.get()).expect("id is a big decimal"))
+        let playthrough = self.active_playthroughs.get_mut(&owner_id).ok_or(JoinPlayerError::PlayerNotOwner)?;
+
+        sqlx::query("INSERT INTO playthrough_players(playthrough_owner, user_id, class) VALUES ($1, $2, $3)")
+            .bind(BigDecimal::from(owner_id.get()))
+            .bind(BigDecimal::from(player.user_id.get()))
+            .bind(player.class as i16)
             .execute(pool).await.expect("query is valid");
 
-        self.all_users.insert(player.id);
-        self.active_playthroughs.entry(owner.id).and_modify(|playthrough| playthrough.players.push(player));
+        self.all_users.insert(player.user_id);
+        playthrough.players.push(player);
 
         Ok(())
     }
 
     pub async fn kick(&mut self, owner: &User, player: &User, pool: &PgPool) -> Result<(), KickError> {
         if !self.all_users.contains(&owner.id) { return Err(KickError::NotInPlaythrough) }
+        if !self.active_playthroughs.contains_key(&owner.id) { return Err(KickError::NotOwner) };
 
-        match self.active_playthroughs.get_mut(&owner.id) {
-            Some(_) => {
-                self.leave(player, pool).await
-                    .and(Ok(()))
-                    .map_err(|err| {
-                        match err {
-                            LeaveError::NotInPlaythrough => KickError::PlayerNotInPlaythrough,
-                            LeaveError::OwnerOfPlaythrough => KickError::OwnerOfPlaythrough,
-                        }
-                })
-            },
-            None => Err(KickError::NotOwner),
-        }
+        self.leave(player, pool).await
+            .and(Ok(()))
+            .map_err(|err| {
+                match err {
+                    LeaveError::NotInPlaythrough => KickError::PlayerNotInPlaythrough,
+                    LeaveError::OwnerOfPlaythrough => KickError::OwnerOfPlaythrough,
+                }
+            })
     }
 
     pub async fn leave(&mut self, player: &User, pool: &PgPool) -> Result<&Playthrough, LeaveError> {
@@ -173,73 +168,59 @@ impl PlaythroughData {
         if self.active_playthroughs.contains_key(&player.id) { return Err(LeaveError::OwnerOfPlaythrough) }
 
         self.all_users.remove(&player.id);
-        let mut playthroughs = None;
-        self.active_playthroughs.iter_mut()
-            .try_for_each(|(_, p)| {
-                let old_len = p.players.len();
-                p.players.retain(|p| p.id != player.id);
-                if p.players.len() != old_len {
-                    // found player to delete
-                    playthroughs = Some(p);
-                    Ok(())
-                } else { Err(()) }
+
+        let (player_id, playthrough) = self.active_playthroughs.values_mut()
+            .find_map(|playthrough| {
+                let players = &mut playthrough.players;
+                let (i, player_id) = players.iter().enumerate().find_map(|(i, p)| (p.user_id == player.id).then_some((i, p.user_id)))?;
+                players.remove(i);
+                Some((player_id, playthrough))
             }).expect("player is in a playthrough");
-        let playthroughs = playthroughs.expect("playthrough was found");
-        let players = &playthroughs.players;
 
-        let player_params = players.iter().enumerate().map(|(i, _)| format!("${}", i + 1)).collect::<Vec<String>>().join(" ");
-        let query_str = format!("UPDATE playthroughs SET players = ARRAY[{}]", player_params);
-        let mut query = sqlx::query(&query_str);
+        sqlx::query("DELETE FROM playthrough_players WHERE user_id = $1")
+            .bind(BigDecimal::from(player_id.get()))
+            .execute(pool).await.expect("query works");
 
-        for player in players {
-            query = query.bind(player.sql_type());
-        }
-
-        query.execute(pool).await.expect("query is valid");
-
-        Ok(playthroughs)
+        Ok(playthrough)
     }
 
     pub async fn progress(&mut self, owner: &User, stage: Option<Stage>, pool: &PgPool) -> Result<&Playthrough, ProgressError> {
         if !self.all_users.contains(&owner.id) { return Err(ProgressError::NotInPlaythrough) }
 
-        match self.active_playthroughs.get_mut(&owner.id) {
-            Some(playthrough) => {
-                let new_stage = stage.or_else(|| {
-                    let stage_index = playthrough.stage as usize;
-                    FromPrimitive::from_usize(stage_index + 1)
-                }).ok_or(ProgressError::LastStage)?;
+        let playthrough = self.active_playthroughs.get_mut(&owner.id).ok_or(ProgressError::NotOwner)?;
 
-                sqlx::query("UPDATE playthroughs SET stage = $1 WHERE owner = $2")
-                    .bind(new_stage as i16)
-                    .bind(BigDecimal::from_u64(owner.id.get()).expect("owner id is big decimal"))
-                    .execute(pool).await.expect("query works");
+        let new_stage = stage.or_else(|| {
+            let stage_index = playthrough.stage as usize;
+            FromPrimitive::from_usize(stage_index + 1)
+        }).ok_or(ProgressError::LastStage)?;
 
-                playthrough.stage = new_stage;
+        sqlx::query("UPDATE playthroughs SET stage = $1 WHERE owner = $2")
+            .bind(new_stage as i16)
+            .bind(BigDecimal::from(owner.id.get()))
+            .execute(pool).await.expect("query works");
 
-                Ok(playthrough)
-            },
-            None => Err(ProgressError::NotOwner),
-        }
+        playthrough.stage = new_stage;
+
+        Ok(playthrough)
     }
 
     pub async fn load(pool: &PgPool) -> PlaythroughData {
-        let playthrough_data: Vec<RawPlaythrough> = sqlx::query_as("SELECT owner, players, stage, started FROM playthroughs")
+        let playthrough_data: Vec<RawPlaythrough> = sqlx::query_as("SELECT * FROM playthroughs")
             .fetch_all(pool).await.expect("can select playthroughs");
 
-        let mut playthroughs = HashMap::with_capacity(playthrough_data.len());
-        let mut all_users = HashSet::new();
+        let players: Vec<RawPlayer> = sqlx::query_as("SELECT * FROM playthrough_players")
+            .fetch_all(pool).await.expect("can select playthrough players");
 
-        for (owner_id, raw_players, stage, started) in playthrough_data {
-            let mut players = Vec::with_capacity(raw_players.len());
-            for player in raw_players {
-                let player_id = player.id.to_u64().expect("player id is valid u64");
-                players.push(Player {
-                    id: UserId::new(player_id),
-                    class: FromPrimitive::from_i16(player.class).expect("player class is a valid class"),
-                });
-                all_users.insert(UserId::new(player_id));
-            }
+        let all_users: HashSet<UserId> = players.iter().map(|player| Into::<Player>::into(player).user_id).collect();
+
+        let players: MultiMap<BigDecimal, Player> = players.into_iter()
+            .map(|player| -> (BigDecimal, Player) { (player.1.clone(), player.into()) })
+            .collect();
+
+        let mut playthroughs = HashMap::with_capacity(playthrough_data.len());
+
+        for (owner_id, stage, started) in playthrough_data {
+            let players = players.get_vec(&owner_id).expect("valid playthrough id").clone();
             let owner_id = owner_id.to_u64().expect("owner snowflake is a valid u64");
             let stage = FromPrimitive::from_i16(stage).expect("stage is a valid stage");
             playthroughs.insert(UserId::new(owner_id), Playthrough { owner: UserId::new(owner_id), players, stage, started });
@@ -259,44 +240,24 @@ pub struct Playthrough {
     pub started: Option<NaiveDateTime>,
 }
 
-impl Playthrough {
-    fn raw_data(&self) -> RawPlaythrough {
-        let owner = BigDecimal::from_u64(self.owner.get()).expect("id is a valid big decimal");
-        (owner, self.players.iter().map(Player::sql_type).collect(), self.stage as i16, self.started)
-    }
-}
-
+#[derive(Clone)]
 pub struct Player {
-    pub id: UserId,
+    pub user_id: UserId,
     pub class: CalamityClass,
 }
 
-impl Player {
-    pub fn raw_data(&self) -> (BigDecimal, i16) {
-        (BigDecimal::from_u64(self.id.get()).expect("id is a valid big decimal"), self.class as i16)
-    }
-
-    fn sql_type(&self) -> RawPlayer {
-        self.raw_data().into()
+impl From<RawPlayer> for Player {
+    fn from(value: RawPlayer) -> Self {
+        Self::from(&value)
     }
 }
 
-#[derive(sqlx::Type)]
-#[sqlx(type_name = "player")]
-struct RawPlayer {
-    id: BigDecimal,
-    class: i16,
-}
-
-impl PgHasArrayType for RawPlayer {
-    fn array_type_info() -> PgTypeInfo {
-        PgTypeInfo::with_name("_player")
-    }
-}
-
-impl From<(BigDecimal, i16)> for RawPlayer {
-    fn from(value: (BigDecimal, i16)) -> Self {
-        RawPlayer { id: value.0, class: value.1 }
+impl From<&RawPlayer> for Player {
+    fn from(value: &RawPlayer) -> Self {
+        Self {
+            user_id: UserId::new(value.0.to_u64().expect("user id is a valid u64")),
+            class: FromPrimitive::from_i16(value.2).expect("class id is a valid class"),
+        }
     }
 }
 

@@ -2,7 +2,7 @@ use poise::{command, ChoiceParameter};
 use reqwest::Url;
 use scraper::{Html, Selector};
 
-use crate::{Context, Result};
+use crate::{Context, PoiseResult};
 
 pub struct WikiPage {
     pub wiki: WikiType,
@@ -57,7 +57,7 @@ pub async fn view_item(
     wiki: WikiType,
     #[description = "The item to search for"]
     item: String,
-) -> Result {
+) -> PoiseResult {
     ctx.defer().await?;
     let url = Url::parse_with_params(wiki.url().join("index.php")?.as_str(), &[("search", item)])?;
     let request = reqwest::get(url.clone()).await?;

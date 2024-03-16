@@ -1,6 +1,6 @@
 use poise::{command, CreateReply};
 
-use crate::{Context, Result, loadout_data::{CalamityClass, Stage}};
+use crate::{Context, PoiseResult, loadout_data::{CalamityClass, Stage}};
 
 #[command(
     slash_command,
@@ -11,7 +11,7 @@ pub async fn view_loadout(
     ctx: Context<'_>,
     #[description = "The class"] class: CalamityClass,
     #[description = "The stage of the game"] stage: Option<Stage>,
-) -> Result {
+) -> PoiseResult {
     let stage = stage.unwrap_or(Stage::PreBoss);
     if let Context::Application(ctx) = ctx {
         let stage_data = ctx.data().loadouts.get(&stage).expect("stage exists");

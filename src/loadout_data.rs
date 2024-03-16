@@ -138,6 +138,12 @@ pub enum Stage {
     Endgame,
 }
 
+impl Default for Stage {
+    fn default() -> Self {
+        Self::PreBoss
+    }
+}
+
 impl Stage {
     pub fn img(&self) -> String {
         use Stage::*;

@@ -1,8 +1,8 @@
 use poise::{command, serenity_prelude::{Timestamp, Color, CreateEmbed}, CreateReply};
-use crate::{Context, Result};
+use crate::{Context, PoiseResult};
 
 #[command(slash_command, description_localized("en-US", "Pings the bot"))]
-pub async fn ping(ctx: Context<'_>) -> Result {
+pub async fn ping(ctx: Context<'_>) -> PoiseResult {
     if let Context::Application(ctx) = ctx {
         let now = Timestamp::now();
         let latency = now.timestamp_millis() - ctx.created_at().with_timezone(&now.timezone()).timestamp_millis();

@@ -1,9 +1,9 @@
 use poise::{command, serenity_prelude::{Color, CreateMessage, CreateEmbed}, CreateReply};
 
-use crate::{Context, Result};
+use crate::{Context, PoiseResult};
 
 #[command(slash_command, rename = "sendrules", default_member_permissions = "MANAGE_GUILD")]
-pub async fn send_rules(ctx: Context<'_>) -> Result {
+pub async fn send_rules(ctx: Context<'_>) -> PoiseResult {
     ctx.channel_id().send_message(ctx, CreateMessage::default()
         .embed(CreateEmbed::new()
             .title("Rules")

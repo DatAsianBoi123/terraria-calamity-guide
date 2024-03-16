@@ -1,17 +1,13 @@
-DO $$ BEGIN
-  CREATE TYPE player AS (
-    id NUMERIC(20, 0),
-    class SMALLINT
-  );
-  EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-
 CREATE TABLE IF NOT EXISTS playthroughs (
-  id SERIAL PRIMARY KEY,
-  owner NUMERIC(20, 0) NOT NULL UNIQUE,
-  players player[] NOT NULL,
+  owner NUMERIC(20, 0) PRIMARY KEY,
   stage SMALLINT NOT NULL CHECK (stage BETWEEN 0 AND 14),
   started TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS playthrough_players (
+  user_id NUMERIC(20, 0) PRIMARY KEY,
+  playthrough_owner NUMERIC(20, 0) NOT NULL REFERENCES playthroughs(owner) ON DELETE CASCADE,
+  class SMALLINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS issues (
