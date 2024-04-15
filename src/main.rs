@@ -1,12 +1,12 @@
-#![deny(unused_crate_dependencies)]
+#![warn(unused_crate_dependencies)]
 use poise::serenity_prelude::{self as serenity, CreateInteractionResponse, CreateInteractionResponseMessage};
 
 use tokio::sync::RwLock;
 
-use std::{fs::{self, File}, net::SocketAddr, sync::Arc, result::Result};
+use std::{fs, net::SocketAddr, sync::Arc, result::Result};
 
 use commands::{report::report, db::db};
-use issue::Issues;
+use issue::{Issues, NoIssueFound};
 use loadout_data::LoadoutData;
 use poise::{
     samples::register_globally,
@@ -55,9 +55,14 @@ pub type PoiseResult = Result<(), Error>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub struct Data {
-    loadouts: LoadoutData,
     pool: PgPool,
     issue_channel: GuildChannel,
+}
+
+pub struct Loadouts;
+
+impl TypeMapKey for Loadouts {
+    type Value = Arc<RwLock<LoadoutData>>;
 }
 
 pub struct Playthroughs;
@@ -124,8 +129,10 @@ async fn poise(
                 ctx.set_presence(Some(ActivityData::playing("TModLoader")), OnlineStatus::Online);
 
                 let mut data_lock = ctx.data.write().await;
+                let loadouts = LoadoutData::load(&pool).await;
                 let playthroughs = PlaythroughData::load(&pool).await;
                 let issues = Issues::load(&ctx.http, &pool).await;
+                data_lock.insert::<Loadouts>(Arc::new(RwLock::new(loadouts)));
                 data_lock.insert::<Playthroughs>(Arc::new(RwLock::new(playthroughs)));
                 data_lock.insert::<IssueData>(Arc::new(RwLock::new(issues)));
 
@@ -148,7 +155,6 @@ async fn poise(
                 info!("helping playthroughs in {} guilds", all_guilds);
                 info!("ready! logged in as {}", ready.user.tag());
                 Ok(Data {
-                    loadouts: loadout_data::load_data(File::open("static/loadout_data.json").expect("file exists")),
                     pool,
                     issue_channel: issue_channel.clone(),
                 })
@@ -180,7 +186,7 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
                         let data_read = ctx.data.read().await;
                         let issues = data_read.get::<IssueData>().ok_or("issues poisoned")?.clone();
                         let mut issue_lock = issues.write().await;
-                        let issue = issue_lock.resolve(id, &data.pool).await.map_err(|_| "issue not found")?;
+                        let issue = issue_lock.resolve(id, &data.pool).await.map_err(|NoIssueFound(id)| format!("issue not found: {id}"))?;
 
                         interaction.create_response(ctx, CreateInteractionResponse::UpdateMessage(
                                 CreateInteractionResponseMessage::new().embed(issue.create_resolved_embed()).components(Vec::with_capacity(0))
@@ -203,7 +209,7 @@ where
         .fold(String::new(), |prev, curr| prev + "\n" + &curr)
 }
 
-pub fn bulleted<S>(vec: &Vec<S>) -> String
+pub fn bulleted<S>(vec: &[S]) -> String
 where
     S: ToString,
 {

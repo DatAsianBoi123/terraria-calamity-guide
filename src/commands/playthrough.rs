@@ -13,6 +13,7 @@ use crate::{
     bulleted,
     ordered_list,
     Playthroughs,
+    Loadouts,
 };
 
 #[command(
@@ -45,15 +46,14 @@ async fn view(
 ) -> PoiseResult {
     let user = other.as_ref().unwrap_or(ctx.author());
     let data_lock = ctx.serenity_context().data.read().await;
-    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
-    let data_lock = &data_lock.read().await;
-    if !data_lock.all_users.contains(&user.id) {
+    let playthroughs = data_lock.get::<Playthroughs>().expect("work").read().await;
+    if !playthroughs.all_users.contains(&user.id) {
         ctx.say(format!("{} not currently in a playthrough", other.map(|_| "That user is").unwrap_or("You are"))).await?;
         return Ok(());
     }
-    let playthrough = data_lock.active_playthroughs.get(&user.id)
+    let playthrough = playthroughs.active_playthroughs.get(&user.id)
         .or_else(|| {
-            data_lock.active_playthroughs.iter()
+            playthroughs.active_playthroughs.iter()
                 .find_map(|(_, playthrough)| playthrough.players.iter().find(|player| player.user_id == user.id).and(Some(playthrough)))
         }).expect("found playthrough player is in");
 
@@ -160,21 +160,28 @@ async fn end(ctx: Context<'_>) -> PoiseResult {
 async fn start(ctx: Context<'_>) -> PoiseResult {
     ctx.defer().await?;
 
-    let data_lock = ctx.serenity_context().data.read().await;
-    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
-    let mut write_lock = data_lock.write().await;
-    let start_res = write_lock.start(ctx.author(), &ctx.data().pool).await;
+    let (playthrough_lock, loadout_lock) = {
+        let data_lock = ctx.serenity_context().data.read().await;
+        let playthrough_lock = data_lock.get::<Playthroughs>().expect("playthroughs exist").clone();
+        let loadout_lock = data_lock.get::<Loadouts>().expect("loadouts exist").clone();
 
-    match start_res {
+        (playthrough_lock, loadout_lock)
+    };
+    let mut playthroughs = playthrough_lock.write().await;
+
+    match playthroughs.start(ctx.author(), &ctx.data().pool).await {
         Ok(()) => {
-            let playthrough = write_lock.active_playthroughs.get(&ctx.author().id).expect("thing exists");
-            let dm_results = resend_loadouts(ctx, playthrough, &ctx.data().loadouts).await;
-            let error_futures = dm_results.into_iter().map(|(user, dm_res)| async move {
-                if dm_res.is_err() {
-                    ctx.say(format!("{user}, I can't DM you! Please enable DMs if you want me to automatically send you loadouts!")).await
-                        .expect("can message");
-                }
-            });
+            let playthrough = playthroughs.active_playthroughs.get(&ctx.author().id).expect("thing exists");
+            let error_futures = {
+                let loadouts = loadout_lock.read().await;
+                let dm_results = resend_loadouts(ctx, playthrough, &loadouts).await;
+                dm_results.into_iter().map(|(user, dm_res)| async move {
+                    if dm_res.is_err() {
+                        ctx.say(format!("{user}, I can't DM you! Please enable DMs if you want me to automatically send you loadouts!")).await
+                            .expect("can message");
+                    }
+                })
+            };
             future::join_all(error_futures).await;
             ctx.say("Successfully started your playthrough!").await?
         },
@@ -255,14 +262,19 @@ async fn progress(
 ) -> PoiseResult {
     ctx.defer().await?;
 
-    let data_lock = ctx.serenity_context().data.read().await;
-    let data_lock = data_lock.get::<Playthroughs>().expect("work").clone();
-    let mut write_lock = data_lock.write().await;
-    let progress_res = write_lock.progress(ctx.author(), stage, &ctx.data().pool).await;
-    match progress_res {
+    let (playthrough_lock, loadout_lock) = {
+        let data_lock = ctx.serenity_context().data.read().await;
+        let playthrough_lock = data_lock.get::<Playthroughs>().expect("work").clone();
+        let loadout_lock = data_lock.get::<Loadouts>().expect("loadout data exists").clone();
+
+        (playthrough_lock, loadout_lock)
+    };
+
+    match playthrough_lock.write().await.progress(ctx.author(), stage, &ctx.data().pool).await {
         Ok(playthrough) => {
             if playthrough.started.is_some() {
-                resend_loadouts(ctx, playthrough, &ctx.data().loadouts).await;
+                let loadouts = loadout_lock.read().await;
+                resend_loadouts(ctx, playthrough, &loadouts).await;
             }
             let progress_str = format!("Progressed to stage `{}`", playthrough.stage.name());
             if playthrough.started.is_some() {
@@ -287,7 +299,7 @@ async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadou
         let http = http.http();
         async move {
             let user = player.user_id.to_user(&http).await.expect("player id is a user");
-            let stage_data = loadouts.get(&playthrough.stage).expect("loadout exists");
+            let stage_data = loadouts.get_stage(playthrough.stage).expect("loadout exists");
             let dm_res = user.direct_message(&http, CreateMessage::new()
                 .embed(stage_data.create_embed(&user, player.class, playthrough.stage))).await.map(|_| ());
             (user, dm_res)

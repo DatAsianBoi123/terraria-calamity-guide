@@ -1,29 +1,53 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Instant, fs::File};
 
 use poise::command;
 use tokio::sync::RwLock;
 
-use crate::{Context, PoiseResult, playthrough_data::PlaythroughData, issue::Issues, Playthroughs, IssueData};
+use crate::{Context, PoiseResult, playthrough_data::PlaythroughData, issue::Issues, Playthroughs, IssueData, loadout_data::LoadoutData, Loadouts};
 
-#[command(slash_command, subcommands("sync"), default_member_permissions = "MANAGE_GUILD", owners_only)]
+#[command(slash_command, subcommands("sync", "reset_loadouts"), default_member_permissions = "MANAGE_GUILD", owners_only)]
 pub async fn db(_: Context<'_>) -> PoiseResult {
     Ok(())
 }
 
-#[command(slash_command, default_member_permissions = "MANAGE_GUILD")]
+#[command(slash_command)]
 async fn sync(ctx: Context<'_>) -> PoiseResult {
     ctx.defer_ephemeral().await?;
 
-    let mut data_lock = ctx.serenity_context().data.write().await;
-    let pool = &ctx.data().pool;
-    let playthroughs = PlaythroughData::load(pool).await;
-    let issues = Issues::load(ctx.http(), pool).await;
-    data_lock.insert::<Playthroughs>(Arc::new(RwLock::new(playthroughs)));
-    data_lock.insert::<IssueData>(Arc::new(RwLock::new(issues)));
+    let before = Instant::now();
+    {
+        let pool = &ctx.data().pool;
+        let loadouts = LoadoutData::load(pool);
+        let playthroughs = PlaythroughData::load(pool);
+        let issues = Issues::load(ctx.http(), pool);
 
-    let playthrough_data = data_lock.get::<Playthroughs>().expect("has playthroughs").clone();
-    let playthrough_data = &playthrough_data.read().await;
-    ctx.say(format!("Successfully synced with database\ntotal playthroughs is now {}", playthrough_data.active_playthroughs.len())).await?;
+        let (loadouts, playthroughs, issues) = tokio::join!(loadouts, playthroughs, issues);
+
+        let mut data_lock = ctx.serenity_context().data.write().await;
+
+        data_lock.insert::<Loadouts>(Arc::new(RwLock::new(loadouts)));
+        data_lock.insert::<Playthroughs>(Arc::new(RwLock::new(playthroughs)));
+        data_lock.insert::<IssueData>(Arc::new(RwLock::new(issues)));
+    }
+
+    ctx.say(format!("Successfully synced with database ({}ms)", (Instant::now() - before).as_millis())).await?;
+    Ok(())
+}
+
+#[command(slash_command, rename = "resetloadouts")]
+async fn reset_loadouts(ctx: Context<'_>) -> PoiseResult {
+    ctx.defer_ephemeral().await?;
+
+    {
+        let mut lock = ctx.serenity_context().data.write().await;
+        let pool = &ctx.data().pool;
+        LoadoutData::reset(pool).await;
+        let loadouts = LoadoutData::from_file(File::open("static/loadout_data.json").expect("file exists")).expect("valid json");
+        loadouts.save(pool).await;
+        lock.insert::<Loadouts>(Arc::new(RwLock::new(loadouts)));
+    }
+
+    ctx.say("Rolled back loadouts").await?;
     Ok(())
 }
 

@@ -3,7 +3,6 @@ use std::{collections::{HashMap, HashSet}, vec::Vec, convert::Into};
 use multimap::MultiMap;
 use num_traits::{FromPrimitive, ToPrimitive};
 use poise::serenity_prelude::{UserId, User};
-use serde::de::Error;
 use sqlx::{PgPool, types::{BigDecimal, chrono::{NaiveDateTime, Utc}}};
 use tracing::info;
 
@@ -205,11 +204,13 @@ impl PlaythroughData {
     }
 
     pub async fn load(pool: &PgPool) -> PlaythroughData {
-        let playthrough_data: Vec<RawPlaythrough> = sqlx::query_as("SELECT * FROM playthroughs")
-            .fetch_all(pool).await.expect("can select playthroughs");
+        let playthrough_data = sqlx::query_as("SELECT * FROM playthroughs")
+            .fetch_all(pool);
 
-        let players: Vec<RawPlayer> = sqlx::query_as("SELECT * FROM playthrough_players")
-            .fetch_all(pool).await.expect("can select playthrough players");
+        let players = sqlx::query_as("SELECT * FROM playthrough_players")
+            .fetch_all(pool);
+
+        let (playthrough_data, players): (Vec<RawPlaythrough>, Vec<RawPlayer>) = tokio::try_join!(playthrough_data, players).expect("queries work");
 
         let all_users: HashSet<UserId> = players.iter().map(|player| Into::<Player>::into(player).user_id).collect();
 
