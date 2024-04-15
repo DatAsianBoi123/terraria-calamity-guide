@@ -11,7 +11,7 @@ use crate::loadout_data::{CalamityClass, Stage};
 type RawIssue = (i32, BigDecimal, i16, i16, String, String, NaiveDateTime);
 
 #[derive(Debug)]
-pub struct NoIssueFound(i32);
+pub struct NoIssueFound(pub i32);
 
 #[non_exhaustive]
 pub struct Issues {
