@@ -49,6 +49,37 @@ impl LoadoutData {
         self.loadouts.get(&stage)
     }
 
+    pub async fn edit(&mut self, pool: &PgPool, stage: Stage, class: CalamityClass, header: LoadoutHeader) -> Option<()> {
+        let loadout = self.loadouts.get_mut(&stage)?.loadouts.get_mut(&class)?;
+        let id = loadout.id.expect("loadout has an id");
+        let query = match header {
+            LoadoutHeader::Armor(armor) => {
+                loadout.armor = armor;
+
+                sqlx::query("UPDATE loadouts SET armor = $1 WHERE id = $2")
+                    .bind(&loadout.armor)
+                    .bind(id)
+            },
+            LoadoutHeader::Weapons(weapons) => {
+                loadout.weapons = weapons;
+
+                sqlx::query("UPDATE loadouts SET weapons = $1 WHERE id = $2")
+                    .bind(&loadout.weapons)
+                    .bind(id)
+            },
+            LoadoutHeader::Equipment(equipment) => {
+                loadout.equipment = equipment;
+
+                sqlx::query("UPDATE loadouts SET equipment = $1 WHERE id = $2")
+                    .bind(&loadout.equipment)
+                    .bind(id)
+            },
+        };
+
+        query.execute(pool).await.expect("valid query");
+        Some(())
+    }
+
     pub async fn reset(pool: &PgPool) {
         sqlx::query("TRUNCATE stage_data, extra_loadout_data, loadouts RESTART IDENTITY CASCADE")
             .execute(pool).await.expect("valid query");
@@ -67,7 +98,7 @@ impl LoadoutData {
 
                 let loadout_queries = stage_data.loadouts.iter().enumerate()
                     .flat_map(move |(loadout_i, (class, loadout))| {
-                        let id = (stage_i * stage_data.loadouts.len() + loadout_i) as i32;
+                        let id = loadout.id.unwrap_or((stage_i * stage_data.loadouts.len() + loadout_i) as i32);
                         let loadout_query = sqlx::query(
                             "INSERT INTO loadouts(id, class, stage, armor, weapons, equipment) VALUES ($1, $2, $3, $4, $5, $6)"
                         )
@@ -138,6 +169,7 @@ impl LoadoutData {
             let class = FromPrimitive::from_i16(raw.class).expect("class num is valid class");
             let extra = extra_loadout_data.remove(&raw.id).unwrap_or_default();
             let loadout = Loadout {
+                id: Some(raw.id),
                 armor: raw.armor,
                 weapons: raw.weapons,
                 equipment: raw.equipment,
@@ -352,9 +384,16 @@ impl CalamityClass {
 
 #[derive(Deserialize, Clone)]
 pub struct Loadout {
+    pub id: Option<i32>,
     pub armor: String,
     pub weapons: [String; 4],
     pub equipment: Vec<String>,
     pub extra: LinkedHashMap<String, Vec<String>>,
+}
+
+pub enum LoadoutHeader {
+    Armor(String),
+    Weapons([String; 4]),
+    Equipment(Vec<String>),
 }
 

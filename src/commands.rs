@@ -6,4 +6,5 @@ pub mod view_item;
 pub mod playthrough;
 pub mod db;
 pub mod report;
+pub mod update_loadout;
 

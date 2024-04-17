@@ -5,7 +5,7 @@ use tokio::sync::RwLock;
 
 use std::{fs, net::SocketAddr, sync::Arc, result::Result};
 
-use commands::{report::report, db::db, loadout::loadout};
+use commands::{report::report, db::db, loadout::loadout, update_loadout::edit_loadout};
 use issue::{Issues, NoIssueFound};
 use loadout_data::LoadoutData;
 use poise::{
@@ -113,6 +113,7 @@ async fn poise(
             commands: vec![
                 ping(),
                 loadout(),
+                edit_loadout(),
                 help(),
                 playthrough(),
                 report(),

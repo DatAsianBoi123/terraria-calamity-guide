@@ -44,6 +44,9 @@ async fn reset_loadouts(ctx: Context<'_>) -> PoiseResult {
         LoadoutData::reset(pool).await;
         let loadouts = LoadoutData::from_file(File::open("static/loadout_data.json").expect("file exists")).expect("valid json");
         loadouts.save(pool).await;
+        // HACK: this is the only easy way IDs are able to get updated bc json file doesn't contain
+        // loadout ids
+        let loadouts = LoadoutData::load(pool).await;
         lock.insert::<Loadouts>(Arc::new(RwLock::new(loadouts)));
     }
 
