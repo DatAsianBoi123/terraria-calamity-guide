@@ -5,7 +5,7 @@ use tokio::sync::RwLock;
 
 use std::{fs, net::SocketAddr, sync::Arc, result::Result};
 
-use commands::{report::report, db::db};
+use commands::{report::report, db::db, loadout::loadout};
 use issue::{Issues, NoIssueFound};
 use loadout_data::LoadoutData;
 use poise::{
@@ -35,7 +35,7 @@ use shuttle_secrets::SecretStore;
 use sqlx::{PgPool, Executor};
 use tracing::info;
 
-use crate::{commands::{ping::ping, help::help, view_loadout::view_loadout, playthrough::playthrough}, playthrough_data::PlaythroughData, route::invite};
+use crate::{commands::{ping::ping, help::help, playthrough::playthrough}, playthrough_data::PlaythroughData, route::invite};
 
 mod loadout_data;
 mod playthrough_data;
@@ -112,7 +112,7 @@ async fn poise(
         .options(FrameworkOptions {
             commands: vec![
                 ping(),
-                view_loadout(),
+                loadout(),
                 help(),
                 playthrough(),
                 report(),

@@ -2,12 +2,13 @@ use poise::{command, CreateReply};
 
 use crate::{Context, PoiseResult, loadout_data::{CalamityClass, Stage}, Loadouts};
 
-#[command(
-    slash_command,
-    description_localized("en-US", "Views the recommended loadout during a specific stage of progression"),
-    rename = "viewloadout"
-)]
-pub async fn view_loadout(
+#[command(slash_command, subcommands("view"), description_localized("en-US", "Loadout commands"))]
+pub async fn loadout(_: Context<'_>) -> PoiseResult {
+    Ok(())
+}
+
+#[command(slash_command, description_localized("en-US", "Views the recommended loadout during a specific stage of progression"))]
+async fn view(
     ctx: Context<'_>,
     #[description = "The class"] class: CalamityClass,
     #[description = "The stage of the game"] stage: Option<Stage>,
