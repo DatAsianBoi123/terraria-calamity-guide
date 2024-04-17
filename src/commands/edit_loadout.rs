@@ -22,10 +22,10 @@ pub async fn armor(ctx: Context<'_>, stage: Stage, class: CalamityClass, armor: 
 }
 
 #[command(slash_command)]
-pub async fn weapons(ctx: Context<'_>, stage: Stage, class: CalamityClass, weapons: Vec<String>) -> PoiseResult {
+pub async fn weapons(ctx: Context<'_>, stage: Stage, class: CalamityClass, weapons: String) -> PoiseResult {
     ctx.defer_ephemeral().await?;
 
-    if let Ok(weapons) = weapons.try_into() {
+    if let Ok(weapons) = weapons.split(',').map(|str| str.to_owned()).collect::<Vec<_>>().try_into() {
         edit(ctx, stage, class, LoadoutHeader::Weapons(weapons)).await;
     } else {
         ctx.say("Must only contain 4 weapons").await?;
@@ -34,10 +34,10 @@ pub async fn weapons(ctx: Context<'_>, stage: Stage, class: CalamityClass, weapo
 }
 
 #[command(slash_command)]
-pub async fn equipment(ctx: Context<'_>, stage: Stage, class: CalamityClass, equipment: Vec<String>) -> PoiseResult {
+pub async fn equipment(ctx: Context<'_>, stage: Stage, class: CalamityClass, equipment: String) -> PoiseResult {
     ctx.defer_ephemeral().await?;
 
-    edit(ctx, stage, class, LoadoutHeader::Equipment(equipment)).await;
+    edit(ctx, stage, class, LoadoutHeader::Equipment(equipment.split(',').map(|str| str.to_owned()).collect())).await;
     Ok(())
 }
 
