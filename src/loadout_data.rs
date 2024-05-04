@@ -6,9 +6,10 @@ use multimap::MultiMap;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
-use rocket::futures::future;
+use rocket::{futures::future, error};
 use serde::Deserialize;
 use sqlx::{PgPool, prelude::FromRow, postgres::{PgHasArrayType, PgTypeInfo}};
+use thiserror::Error;
 use crate::{str, bulleted_array, bulleted};
 use linked_hash_map::LinkedHashMap;
 
@@ -49,8 +50,10 @@ impl LoadoutData {
         self.loadouts.get(&stage)
     }
 
-    pub async fn edit(&mut self, pool: &PgPool, stage: Stage, class: CalamityClass, header: LoadoutHeader) -> Option<()> {
-        let loadout = self.loadouts.get_mut(&stage)?.loadouts.get_mut(&class)?;
+    pub async fn edit(&mut self, pool: &PgPool, stage: Stage, class: CalamityClass, header: LoadoutHeader) -> Result<(), EditLoadoutError> {
+        let loadout = self.loadouts.get_mut(&stage)
+            .and_then(|stage_data| stage_data.loadouts.get_mut(&class))
+            .ok_or(LoadoutNotFoundError { stage, class })?;
         let id = loadout.id.expect("loadout has an id");
         let query = match header {
             LoadoutHeader::Armor(armor) => {
@@ -77,7 +80,55 @@ impl LoadoutData {
         };
 
         query.execute(pool).await.expect("valid query");
-        Some(())
+        Ok(())
+    }
+
+    pub async fn set_extra(
+        &mut self,
+        pool: &PgPool,
+        stage: Stage,
+        class: CalamityClass,
+        label: String,
+        values: Vec<String>,
+    ) -> Result<(), SetExtraError> {
+        let loadout = self.loadouts.get_mut(&stage)
+            .and_then(|stage_data| stage_data.loadouts.get_mut(&class))
+            .ok_or(LoadoutNotFoundError { stage, class })?;
+        if !loadout.extra.contains_key(&label) { return Err(LoadoutNotFoundError { stage, class })?; }
+
+        loadout.extra.entry(label.clone()).and_modify(|old_data| *old_data = values.clone());
+
+        sqlx::query("UPDATE extra_loadout_data SET data = $1 WHERE label = $2 AND loadout_id = $3")
+            .bind(values)
+            .bind(label)
+            .bind(loadout.id.expect("loadout has id"))
+            .execute(pool).await.expect("query is valid");
+
+        Ok(())
+    }
+
+    pub async fn add_extra(
+        &mut self,
+        pool: &PgPool,
+        stage: Stage,
+        class: CalamityClass,
+        label: String,
+        values: Vec<String>,
+    ) -> Result<(), AddExtraError> {
+        let loadout = self.loadouts.get_mut(&stage)
+            .and_then(|stage_data| stage_data.loadouts.get_mut(&class))
+            .ok_or(LoadoutNotFoundError { stage, class })?;
+        if loadout.extra.contains_key(&label) { return Err(AddExtraError::LabelAlreadyExists(label)); }
+
+        loadout.extra.insert(label.clone(), values.clone());
+
+        sqlx::query("INSERT INTO extra_loadout_data(loadout_id, label, data) VALUES ($1, $2, $3)")
+            .bind(loadout.id.expect("loadout has an id"))
+            .bind(label)
+            .bind(values)
+            .execute(pool).await.expect("query is valid");
+
+        Ok(())
     }
 
     pub async fn reset(pool: &PgPool) {
@@ -330,6 +381,12 @@ pub enum Stage {
     Endgame,
 }
 
+impl Display for Stage {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.name())
+    }
+}
+
 impl Default for Stage {
     fn default() -> Self {
         Self::PreBoss
@@ -361,13 +418,19 @@ impl Stage {
     }
 }
 
-#[derive(Clone, Copy, Deserialize, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
+#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
 pub enum CalamityClass {
     Melee,
     Ranger,
     Mage,
     Summoner,
     Rogue,
+}
+
+impl Display for CalamityClass {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 impl CalamityClass {
@@ -395,5 +458,34 @@ pub enum LoadoutHeader {
     Armor(String),
     Weapons([String; 4]),
     Equipment(Vec<String>),
+}
+
+#[derive(Error, Debug)]
+pub enum EditLoadoutError {
+    #[error(transparent)]
+    LoadoutNotFound(#[from] LoadoutNotFoundError),
+}
+
+#[derive(Error, Debug)]
+pub enum SetExtraError {
+    #[error(transparent)]
+    LoadoutNotFound(#[from] LoadoutNotFoundError),
+    #[error("Label '{0}' was not found")]
+    LabelNotFound(String),
+}
+
+#[derive(Error, Debug)]
+pub enum AddExtraError {
+    #[error(transparent)]
+    LoadoutNotFound(#[from] LoadoutNotFoundError),
+    #[error("label '{0}' already exists")]
+    LabelAlreadyExists(String),
+}
+
+#[derive(Error, Debug)]
+#[error("Loadout not found with stage {stage} and class {class}")]
+pub struct LoadoutNotFoundError {
+    pub stage: Stage,
+    pub class: CalamityClass,
 }
 
