@@ -30,7 +30,7 @@ use rocket::{fs::{FileServer, relative}, routes};
 
 use shuttle_rocket::RocketService;
 use shuttle_runtime::{CustomError, Service};
-use shuttle_secrets::SecretStore;
+use shuttle_runtime::SecretStore;
 
 use sqlx::{PgPool, Executor};
 use tracing::info;
@@ -98,7 +98,7 @@ impl Service for PoiseRocketService {
 
 #[shuttle_runtime::main]
 async fn poise(
-    #[shuttle_secrets::Secrets] secret_store: SecretStore,
+    #[shuttle_runtime::Secrets] secret_store: SecretStore,
     #[shuttle_shared_db::Postgres(
         local_uri = "postgres://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb"
     )] pool: PgPool,
