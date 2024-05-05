@@ -6,7 +6,7 @@ use multimap::MultiMap;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
-use rocket::{futures::future, error};
+use rocket::futures::future;
 use serde::Deserialize;
 use sqlx::{PgPool, prelude::FromRow, postgres::{PgHasArrayType, PgTypeInfo}};
 use thiserror::Error;
@@ -137,8 +137,9 @@ impl LoadoutData {
     }
 
     pub async fn save(&self, pool: &PgPool) {
+        // HACK: literally cannot find a better way to do this
         let queries = self.loadouts.iter().enumerate()
-            .flat_map(|(stage_i, (stage, stage_data))| {
+            .map(|(stage_i, (stage, stage_data))| {
                 let stage_id = *stage as i16;
 
                 let stage_data_query = sqlx::query("INSERT INTO stage_data(stage, health_potion, powerups) VALUES ($1, $2, $3)")
@@ -148,7 +149,7 @@ impl LoadoutData {
                     .execute(pool);
 
                 let loadout_queries = stage_data.loadouts.iter().enumerate()
-                    .flat_map(move |(loadout_i, (class, loadout))| {
+                    .map(move |(loadout_i, (class, loadout))| {
                         let id = loadout.id.unwrap_or((stage_i * stage_data.loadouts.len() + loadout_i) as i32);
                         let loadout_query = sqlx::query(
                             "INSERT INTO loadouts(id, class, stage, armor, weapons, equipment) VALUES ($1, $2, $3, $4, $5, $6)"
@@ -170,15 +171,16 @@ impl LoadoutData {
                                     .execute(pool)
                             });
 
-                        iter::once(loadout_query)
-                            .chain(extra_queries)
+                        (iter::once(loadout_query), extra_queries)
                     });
 
-                iter::once(stage_data_query)
-                    .chain(loadout_queries)
+                let queries = iter::once(stage_data_query)
+                    .chain(loadout_queries.clone().flat_map(|(query, _)| query));
+                (queries, loadout_queries.flat_map(|(_, extra)| extra))
             });
 
-        future::join_all(queries).await;
+        future::join_all(queries.clone().flat_map(|(query, _)| query)).await;
+        future::join_all(queries.flat_map(|(_, extra)| extra)).await;
     }
 
     pub fn from_file(loadouts: File) -> Option<LoadoutData> {
