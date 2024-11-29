@@ -8,7 +8,7 @@ use num_traits::FromPrimitive;
 use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
 use rocket::futures::future;
 use serde::Deserialize;
-use sqlx::{PgPool, prelude::FromRow, postgres::{PgHasArrayType, PgTypeInfo}};
+use sqlx::{PgPool, prelude::FromRow};
 use thiserror::Error;
 use crate::{str, bulleted_array, bulleted};
 use linked_hash_map::LinkedHashMap;
@@ -308,12 +308,6 @@ pub enum Powerup {
     CelestialOnion,
 }
 
-impl PgHasArrayType for Powerup {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        PgTypeInfo::with_name("_powerup")
-    }
-}
-
 impl Display for Powerup {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let str = match self {
@@ -341,12 +335,6 @@ pub enum PotionType {
 impl Display for PotionType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         Debug::fmt(&self, f)
-    }
-}
-
-impl PgHasArrayType for PotionType {
-    fn array_type_info() -> PgTypeInfo {
-        PgTypeInfo::with_name("_health_potion")
     }
 }
 

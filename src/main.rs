@@ -26,7 +26,7 @@ use serenity::{
     Client,
     FullEvent,
 };
-use rocket::{fs::{FileServer, relative}, routes};
+use rocket::{fs::{relative, FileServer}, routes};
 
 use shuttle_rocket::RocketService;
 use shuttle_runtime::{CustomError, Service};
@@ -180,19 +180,22 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
         FullEvent::InteractionCreate { interaction: Interaction::Component(interaction) }
             if matches!(interaction.data.kind, ComponentInteractionDataKind::Button) && interaction.data.custom_id.starts_with("r-") => {
                 if let Some(member) = &interaction.member {
-                    if let Ok(permissions) = member.permissions(&ctx.cache) {
+                    let id = {
+                        let guild = interaction.guild_id.expect("has guild id").to_guild_cached(ctx).expect("guild exists in cache");
+                        let channel = guild.channels.get(&interaction.channel_id).expect("channel exists");
+                        let permissions = guild.user_permissions_in(channel, member);
                         if !permissions.administrator() { return Ok(()); }
-                        let id: i32 = interaction.data.custom_id[2..].parse().expect("issue id is a number");
+                        interaction.data.custom_id[2..].parse::<i32>().expect("issue id is a number")
+                    };
 
-                        let data_read = ctx.data.read().await;
-                        let issues = data_read.get::<IssueData>().ok_or("issues poisoned")?.clone();
-                        let mut issue_lock = issues.write().await;
-                        let issue = issue_lock.resolve(id, &data.pool).await.map_err(|NoIssueFound(id)| format!("issue not found: {id}"))?;
+                    let data_read = ctx.data.read().await;
+                    let issues = data_read.get::<IssueData>().ok_or("issues poisoned")?.clone();
+                    let mut issue_lock = issues.write().await;
+                    let issue = issue_lock.resolve(id, &data.pool).await.map_err(|NoIssueFound(id)| format!("issue not found: {id}"))?;
 
-                        interaction.create_response(ctx, CreateInteractionResponse::UpdateMessage(
-                                CreateInteractionResponseMessage::new().embed(issue.create_resolved_embed()).components(Vec::with_capacity(0))
-                        )).await?;
-                    }
+                    interaction.create_response(ctx, CreateInteractionResponse::UpdateMessage(
+                            CreateInteractionResponseMessage::new().embed(issue.create_resolved_embed()).components(Vec::with_capacity(0))
+                    )).await?;
                 }
         }
         _ => {},

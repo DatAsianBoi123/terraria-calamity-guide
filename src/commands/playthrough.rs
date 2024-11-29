@@ -69,7 +69,7 @@ async fn view(
             .thumbnail(current_user.avatar_url().unwrap_or_default())
             .field("Players", bulleted(&player_list).to_string(), false)
             .field("Date Started", match playthrough.started {
-                Some(date) => format!("<t:{}:D>", date.timestamp()),
+                Some(date) => format!("<t:{}:D>", date.and_utc().timestamp()),
                 None => str!("Playthrough hasn't started yet"),
             }, true)
             .field("Game Stage", playthrough.stage.name(), true)

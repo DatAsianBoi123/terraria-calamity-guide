@@ -108,7 +108,7 @@ impl Issue {
             .field("Correct Phrase", &self.correct, true)
             .color(Color::ORANGE)
             .footer(CreateEmbedFooter::new(format!("Created by {}", self.author.name)))
-            .timestamp(Timestamp::from_unix_timestamp(self.created_at.timestamp()).expect("timestamp is valid"))
+            .timestamp(Timestamp::from_unix_timestamp(self.created_at.and_utc().timestamp()).expect("timestamp is valid"))
     }
 
     pub fn create_components(&self) -> Vec<CreateActionRow> {
