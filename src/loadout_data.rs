@@ -10,7 +10,7 @@ use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timest
 use serde::Deserialize;
 use sqlx::{PgPool, prelude::FromRow};
 use thiserror::Error;
-use crate::{str, bulleted_array, bulleted};
+use crate::{bulleted, str};
 use linked_hash_map::LinkedHashMap;
 
 #[derive(FromRow)]
@@ -258,7 +258,7 @@ impl StageData {
             .author(CreateEmbedAuthor::new(&author.name).icon_url(author.avatar_url().unwrap_or_default()))
             .thumbnail(stage.img())
             .field("<:armor:1312528988786393088> Armor", &loadout.armor, true)
-            .field("<:weapons:1312528868074328074> Weapons", bulleted_array(&loadout.weapons), true)
+            .field("<:weapons:1312528868074328074> Weapons", bulleted(&loadout.weapons), true)
             .field("<:equipment:1312528964866150471> Equipment", bulleted(&loadout.equipment), true)
             .color(Color::DARK_RED)
             .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))

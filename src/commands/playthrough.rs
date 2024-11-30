@@ -4,17 +4,7 @@ use futures::future::join_all;
 use poise::{command, serenity_prelude::{User, Color, Timestamp, CacheHttp, CreateEmbed, CreateMessage, CreateEmbedFooter}, ChoiceParameter, CreateReply};
 use sqlx::types::chrono::Utc;
 
-use crate::{
-    Context,
-    PoiseResult,
-    loadout_data::{CalamityClass, Stage, LoadoutData},
-    playthrough_data::{FinishPlaythroughError, Player, JoinPlayerError, LeaveError, StartPlaythroughError, KickError, ProgressError, Playthrough},
-    str,
-    bulleted,
-    ordered_list,
-    Playthroughs,
-    Loadouts,
-};
+use crate::{bulleted, loadout_data::{CalamityClass, LoadoutData, Stage}, ordered, playthrough_data::{FinishPlaythroughError, JoinPlayerError, KickError, LeaveError, Player, Playthrough, ProgressError, StartPlaythroughError}, str, Context, Loadouts, Playthroughs, PoiseResult};
 
 #[command(
     slash_command,
@@ -35,7 +25,7 @@ async fn list(ctx: Context<'_>) -> PoiseResult {
             let owner = owner.to_user(&ctx).await.expect("user exists");
             format!("{} ({} total players) - {}", owner.name, playthrough.players.len(), playthrough.stage.name())
         })).await;
-    ctx.say(ordered_list(&owners)).await?;
+    ctx.say(ordered(&owners)).await?;
     Ok(())
 }
 

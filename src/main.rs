@@ -199,41 +199,22 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
     Ok(())
 }
 
-pub fn ordered_list<S>(vec: &[S]) -> String
+pub fn ordered<S, I>(iter: I) -> String
 where
     S: ToString,
+    I: IntoIterator<Item = S>,
 {
-    vec.iter()
+    iter.into_iter()
         .map(|e| str!("1. ") + &e.to_string())
         .fold(String::new(), |prev, curr| prev + "\n" + &curr)
 }
 
-pub fn bulleted<S>(vec: &[S]) -> String
+pub fn bulleted<S, I>(iter: I) -> String
 where
     S: ToString,
+    I: IntoIterator<Item = S>,
 {
-    if vec.len() == 1 { return vec[0].to_string() }
-    vec.iter()
-        .map(|e| str!("- ") + &e.to_string())
-        .fold(String::new(), |prev, curr| prev + "\n" + &curr)
-}
-
-pub fn bulleted_iter<S, I>(iter: I) -> String
-where
-    S: ToString,
-    I: Iterator<Item = S>,
-{
-    iter
-        .map(|e| str!("- ") + &e.to_string())
-        .fold(String::new(), |prev, curr| prev + "\n" + &curr)
-}
-
-pub fn bulleted_array<S>(array: &[S]) -> String
-where
-    S: ToString,
-{
-    if array.len() == 1 { return array[0].to_string() }
-    array.iter()
+    iter.into_iter()
         .map(|e| str!("- ") + &e.to_string())
         .fold(String::new(), |prev, curr| prev + "\n" + &curr)
 }
