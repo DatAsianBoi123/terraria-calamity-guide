@@ -2,11 +2,11 @@ use core::fmt::{self, Debug};
 use std::{collections::HashMap, fmt::{Display, Formatter}, fs::File, io::BufReader, iter};
 
 use convert_case::{Casing, Case};
+use futures::future::join_all;
 use multimap::MultiMap;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
-use rocket::futures::future;
 use serde::Deserialize;
 use sqlx::{PgPool, prelude::FromRow};
 use thiserror::Error;
@@ -179,8 +179,8 @@ impl LoadoutData {
                 (queries, loadout_queries.flat_map(|(_, extra)| extra))
             });
 
-        future::join_all(queries.clone().flat_map(|(query, _)| query)).await;
-        future::join_all(queries.flat_map(|(_, extra)| extra)).await;
+        join_all(queries.clone().flat_map(|(query, _)| query)).await;
+        join_all(queries.flat_map(|(_, extra)| extra)).await;
     }
 
     pub fn from_file(loadouts: File) -> Option<LoadoutData> {

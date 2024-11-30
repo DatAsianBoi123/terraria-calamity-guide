@@ -1,7 +1,7 @@
 use std::{vec, result::Result as StdResult, convert::Into};
 
+use futures::future::join_all;
 use poise::{command, serenity_prelude::{User, Color, Timestamp, CacheHttp, CreateEmbed, CreateMessage, CreateEmbedFooter}, ChoiceParameter, CreateReply};
-use rocket::futures::future;
 use sqlx::types::chrono::Utc;
 
 use crate::{
@@ -30,7 +30,7 @@ async fn list(ctx: Context<'_>) -> PoiseResult {
     let data_lock = ctx.serenity_context().data.read().await;
     let read_lock = data_lock.get::<Playthroughs>().expect("get data").clone();
     let playthroughs = &read_lock.read().await.active_playthroughs;
-    let owners = future::join_all(playthroughs.iter()
+    let owners = join_all(playthroughs.iter()
         .map(|(owner, playthrough)| async {
             let owner = owner.to_user(&ctx).await.expect("user exists");
             format!("{} ({} total players) - {}", owner.name, playthrough.players.len(), playthrough.stage.name())
@@ -58,7 +58,7 @@ async fn view(
         }).expect("found playthrough player is in");
 
     let owner = playthrough.owner.to_user(ctx).await.expect("owner is a user");
-    let player_list = future::join_all(playthrough.players.iter()
+    let player_list = join_all(playthrough.players.iter()
         .map(|p| async move { format!("{} - {}{}", p.user_id.to_user(ctx).await.expect("player is user").name, p.class.name(), p.class.emoji()) })).await;
 
     let current_user = ctx.serenity_context().cache.current_user().clone();
@@ -182,7 +182,7 @@ async fn start(ctx: Context<'_>) -> PoiseResult {
                     }
                 })
             };
-            future::join_all(error_futures).await;
+            join_all(error_futures).await;
             ctx.say("Successfully started your playthrough!").await?
         },
         Err(StartPlaythroughError::NotOwner) => ctx.say("You are not the owner of the playthrough you are in").await?,
@@ -305,6 +305,6 @@ async fn resend_loadouts(http: impl CacheHttp, playthrough: &Playthrough, loadou
             (user, dm_res)
         }
     });
-    future::join_all(dm_futures).await
+    join_all(dm_futures).await
 }
 

@@ -1,6 +1,8 @@
 #![warn(unused_crate_dependencies)]
+use axum::Router;
 use poise::serenity_prelude::{self as serenity, CreateInteractionResponse, CreateInteractionResponseMessage};
 
+use tokio::net::TcpListener;
 use tokio::sync::RwLock;
 
 use std::{fs, net::SocketAddr, sync::Arc, result::Result};
@@ -26,22 +28,20 @@ use serenity::{
     Client,
     FullEvent,
 };
-use rocket::{fs::{relative, FileServer}, routes};
 
-use shuttle_rocket::RocketService;
 use shuttle_runtime::{CustomError, Service};
 use shuttle_runtime::SecretStore;
 
 use sqlx::{PgPool, Executor};
 use tracing::info;
 
-use crate::{commands::{ping::ping, help::help, playthrough::playthrough}, playthrough_data::PlaythroughData, route::invite};
+use crate::{commands::{ping::ping, help::help, playthrough::playthrough}, playthrough_data::PlaythroughData};
 
+mod web;
 mod loadout_data;
 mod playthrough_data;
 mod commands;
 mod issue;
-mod route;
 
 #[macro_export]
 macro_rules! str {
@@ -77,19 +77,19 @@ impl TypeMapKey for IssueData {
     type Value = Arc<RwLock<Issues>>;
 }
 
-struct PoiseRocketService {
+struct PoiseAxumService {
     pub poise: Client,
-    pub rocket: RocketService,
+    pub axum: Router,
 }
 
 #[shuttle_runtime::async_trait]
-impl Service for PoiseRocketService {
+impl Service for PoiseAxumService {
     async fn bind(mut self, addr: SocketAddr) -> Result<(), shuttle_runtime::Error> {
-        let binder = self.rocket.bind(addr);
+        let web_server = axum::serve(TcpListener::bind(addr).await.unwrap(), self.axum);
 
         tokio::select! {
             _ = self.poise.start() => {},
-            _ = binder => {},
+            _ = web_server => {},
         }
 
         Ok(())
@@ -102,7 +102,7 @@ async fn poise(
     #[shuttle_shared_db::Postgres(
         local_uri = "postgres://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb"
     )] pool: PgPool,
-) -> Result<PoiseRocketService, shuttle_runtime::Error> {
+) -> Result<PoiseAxumService, shuttle_runtime::Error> {
     let token = secret_store.get("TOKEN").expect("TOKEN not found");
 
     let schema = fs::read_to_string("static/schema.sql").expect("file exists");
@@ -167,12 +167,7 @@ async fn poise(
         .framework(framework)
         .await.expect("create client");
 
-    let rocket = rocket::build()
-        .mount("/", FileServer::from(relative!("static/public")))
-        .mount("/", routes![invite])
-        .into();
-
-    Ok(PoiseRocketService { poise: client, rocket })
+    Ok(PoiseAxumService { poise: client, axum: web::app() })
 }
 
 async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> PoiseResult {
