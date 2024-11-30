@@ -257,9 +257,9 @@ impl StageData {
             .title(format!("{} - {}", class.name(), stage.name()))
             .author(CreateEmbedAuthor::new(&author.name).icon_url(author.avatar_url().unwrap_or_default()))
             .thumbnail(stage.img())
-            .field("<:armor:1129548766857404576> Armor", &loadout.armor, true)
-            .field("<:weapons:1129556916805304410> Weapons", bulleted_array(&loadout.weapons), true)
-            .field("<:equipment:1129549501712048178> Equipment", bulleted(&loadout.equipment), true)
+            .field("<:armor:1312528988786393088> Armor", &loadout.armor, true)
+            .field("<:weapons:1312528868074328074> Weapons", bulleted_array(&loadout.weapons), true)
+            .field("<:equipment:1312528964866150471> Equipment", bulleted(&loadout.equipment), true)
             .color(Color::DARK_RED)
             .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
             .timestamp(Timestamp::now());
@@ -271,9 +271,9 @@ impl StageData {
         }
         embed = embed
             .field("** **", "** **", false)
-            .field("<:healing_potion:1129549725331370075> Healing Potion", self.potion.to_string(), true);
+            .field("<:healing_potion:1312528931836002314> Healing Potion", self.potion.to_string(), true);
         if let Some(powerups) = &self.powerups {
-            embed = embed.field("<:powerups:1129550131000254614> Permanent Powerups", bulleted(powerups), true);
+            embed = embed.field("<:powerups:1312528902308102254> Permanent Powerups", bulleted(powerups), true);
         }
         embed
     }
@@ -426,11 +426,11 @@ impl Display for CalamityClass {
 impl CalamityClass {
     pub fn emoji(&self) -> String {
         match self {
-            Self::Melee => str!("<:melee:1152482097911574571>"),
-            Self::Ranger => str!("<:ranger:1152484385359142995>"),
-            Self::Mage => str!("<:mage:1152485318021361716>"),
-            Self::Summoner => str!("<:summoner:1152485908105396277>"),
-            Self::Rogue => str!("<:rogue:1152486391503126568>"),
+            Self::Melee => str!("<:melee:1312528694367092780>"),
+            Self::Ranger => str!("<:ranger:1312528658895736893>"),
+            Self::Mage => str!("<:mage:1312528590734098542>"),
+            Self::Summoner => str!("<:summoner:1312527694172393563>"),
+            Self::Rogue => str!("<:rogue:1312527650945896579>"),
         }
     }
 }
