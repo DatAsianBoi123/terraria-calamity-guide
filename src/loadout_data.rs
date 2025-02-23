@@ -8,7 +8,7 @@ use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
 use reqwest::Url;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, prelude::FromRow};
 use thiserror::Error;
 use crate::{bulleted, str};
@@ -95,7 +95,7 @@ impl LoadoutData {
         let loadout = self.loadouts.get_mut(&stage)
             .and_then(|stage_data| stage_data.loadouts.get_mut(&class))
             .ok_or(LoadoutNotFoundError { stage, class })?;
-        if !loadout.extra.contains_key(&label) { return Err(LoadoutNotFoundError { stage, class })?; }
+        if !loadout.extra.contains_key(&label) { return Err(SetExtraError::LabelNotFound(label)); }
 
         loadout.extra.entry(label.clone()).and_modify(|old_data| *old_data = values.clone());
 
@@ -435,8 +435,9 @@ impl CalamityClass {
     }
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Loadout {
+    #[serde(skip_serializing)]
     pub id: Option<i32>,
     pub armor: String,
     pub weapons: [String; 4],

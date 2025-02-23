@@ -1,6 +1,6 @@
 use poise::command;
 
-use crate::{Context, PoiseResult, loadout_data::{Stage, CalamityClass, LoadoutHeader, EditLoadoutError}, Loadouts, str};
+use crate::{Context, PoiseResult, loadout_data::{Stage, CalamityClass, LoadoutHeader, EditLoadoutError}, str};
 
 #[command(
     slash_command,
@@ -54,11 +54,12 @@ pub async fn equipment(ctx: Context<'_>, stage: Stage, class: CalamityClass, equ
 pub async fn replace_extra(ctx: Context<'_>, stage: Stage, class: CalamityClass, label: String, values: String) -> PoiseResult {
     ctx.defer_ephemeral().await?;
 
-    let mut lock = ctx.serenity_context().data.write().await;
-    let mut loadout_data = lock.get_mut::<Loadouts>().expect("loadouts exist").write().await;
+    let message = {
+        let mut loadout_data = ctx.data().loadouts.write().await;
 
-    let message = loadout_data.set_extra(&ctx.data().pool, stage, class, label, values.split(',').map(|str| str.to_owned()).collect()).await
-        .map_or_else(|err| str!(err), |_| str!("Successfully replaced extra label"));
+        loadout_data.set_extra(&ctx.data().pool, stage, class, label, values.split(',').map(|str| str.to_owned()).collect()).await
+            .map_or_else(|err| str!(err), |_| str!("Successfully replaced extra label"))
+    };
     ctx.say(message).await?;
 
     Ok(())
@@ -68,19 +69,19 @@ pub async fn replace_extra(ctx: Context<'_>, stage: Stage, class: CalamityClass,
 pub async fn add_extra(ctx: Context<'_>, stage: Stage, class: CalamityClass, label: String, values: String) -> PoiseResult {
     ctx.defer_ephemeral().await?;
 
-    let mut lock = ctx.serenity_context().data.write().await;
-    let mut loadout_data = lock.get_mut::<Loadouts>().expect("loadouts exist").write().await;
+    let message = {
+        let mut loadout_data = ctx.data().loadouts.write().await;
 
-    let message = loadout_data.set_extra(&ctx.data().pool, stage, class, label, values.split(',').map(|str| str.to_owned()).collect()).await
-        .map_or_else(|err| str!(err), |_| str!("Successfully replaced extra label"));
+        loadout_data.add_extra(&ctx.data().pool, stage, class, label, values.split(',').map(|str| str.to_owned()).collect()).await
+            .map_or_else(|err| str!(err), |_| str!("Successfully replaced extra label"))
+    };
     ctx.say(message).await?;
 
     Ok(())
 }
 
 async fn edit(ctx: Context<'_>, stage: Stage, class: CalamityClass, header: LoadoutHeader) -> Result<(), EditLoadoutError> {
-    let mut lock = ctx.serenity_context().data.write().await;
-    let mut loadout_data = lock.get_mut::<Loadouts>().expect("loadouts exist").write().await;
+    let mut loadout_data = ctx.data().loadouts.write().await;
     loadout_data.edit(&ctx.data().pool, stage, class, header).await
 }
 

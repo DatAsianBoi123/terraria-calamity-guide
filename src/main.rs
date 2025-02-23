@@ -25,7 +25,6 @@ use serenity::{
     GuildChannel,
     Interaction,
     GatewayIntents,
-    prelude::TypeMapKey,
     ComponentInteractionDataKind,
     Client,
     FullEvent,
@@ -59,24 +58,10 @@ pub type Context<'a> = poise::Context<'a, Data, Error>;
 pub struct Data {
     pool: PgPool,
     issue_channel: GuildChannel,
-}
 
-pub struct Loadouts;
-
-impl TypeMapKey for Loadouts {
-    type Value = Arc<RwLock<LoadoutData>>;
-}
-
-pub struct Playthroughs;
-
-impl TypeMapKey for Playthroughs {
-    type Value = Arc<RwLock<PlaythroughData>>;
-}
-
-pub struct IssueData;
-
-impl TypeMapKey for IssueData {
-    type Value = Arc<RwLock<Issues>>;
+    loadouts: Arc<RwLock<LoadoutData>>,
+    playthroughs: Arc<RwLock<PlaythroughData>>,
+    issues: Arc<RwLock<Issues>>,
 }
 
 struct PoiseAxumService {
@@ -134,13 +119,9 @@ async fn poise(
                 register_globally(ctx, &framework.options().commands).await?;
                 ctx.set_presence(Some(ActivityData::playing("TModLoader")), OnlineStatus::Online);
 
-                let mut data_lock = ctx.data.write().await;
                 let loadouts = LoadoutData::load(&pool).await;
                 let playthroughs = PlaythroughData::load(&pool).await;
                 let issues = Issues::load(&ctx.http, &pool).await;
-                data_lock.insert::<Loadouts>(Arc::new(RwLock::new(loadouts)));
-                data_lock.insert::<Playthroughs>(Arc::new(RwLock::new(playthroughs)));
-                data_lock.insert::<IssueData>(Arc::new(RwLock::new(issues)));
 
                 let guild_id: u64 = secret_store.get("ISSUE_GUILD").and_then(|id| id.parse().ok()).expect("issue guild should be valid and exists");
                 let guild_id = GuildId::from(guild_id);
@@ -152,10 +133,6 @@ async fn poise(
                 let issue_channel = channels.get(&channel_id).expect("channel exists");
 
                 let all_guilds = ctx.cache.guild_count();
-                let playthroughs = data_lock.get::<Playthroughs>().expect("playthroughs exist").clone();
-                let playthroughs = playthroughs.read().await;
-                let issues = data_lock.get::<IssueData>().expect("issues exist").clone();
-                let issues = issues.read().await;
                 info!("loaded {} playthroughs", playthroughs.active_playthroughs.len());
                 info!("loaded {} issues", issues.issues.len());
                 info!("helping playthroughs in {} guilds", all_guilds);
@@ -163,6 +140,10 @@ async fn poise(
                 Ok(Data {
                     pool,
                     issue_channel: issue_channel.clone(),
+
+                    loadouts: Arc::new(RwLock::new(loadouts)),
+                    playthroughs: Arc::new(RwLock::new(playthroughs)),
+                    issues: Arc::new(RwLock::new(issues)),
                 })
             })
         })
@@ -188,13 +169,12 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
                         interaction.data.custom_id[2..].parse::<i32>().expect("issue id is a number")
                     };
 
-                    let data_read = ctx.data.read().await;
-                    let issues = data_read.get::<IssueData>().ok_or("issues poisoned")?.clone();
-                    let mut issue_lock = issues.write().await;
-                    let issue = issue_lock.resolve(id, &data.pool).await.map_err(|NoIssueFound(id)| format!("issue not found: {id}"))?;
+                    let mut issues = data.issues.write().await;
+                    let issue = issues.resolve(id, &data.pool).await.map_err(|NoIssueFound(id)| format!("issue not found: {id}"))?;
 
-                    interaction.create_response(ctx, CreateInteractionResponse::UpdateMessage(
-                            CreateInteractionResponseMessage::new().embed(issue.create_resolved_embed()).components(Vec::with_capacity(0))
+                    interaction.create_response(ctx, CreateInteractionResponse::UpdateMessage(CreateInteractionResponseMessage::new()
+                            .embed(issue.create_resolved_embed())
+                            .components(Vec::with_capacity(0))
                     )).await?;
                 }
         }

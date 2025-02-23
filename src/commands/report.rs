@@ -1,6 +1,6 @@
 use poise::{command, serenity_prelude::CreateMessage};
 
-use crate::{Context, PoiseResult, loadout_data::{CalamityClass, Stage}, IssueData};
+use crate::{Context, PoiseResult, loadout_data::{CalamityClass, Stage}};
 
 #[command(slash_command, description_localized("en-US", "Reports a problem with a loadout"), ephemeral)]
 pub async fn report(
@@ -10,9 +10,7 @@ pub async fn report(
     #[description = "The incorrect phrase"] incorrect: String,
     #[description = "The phrase that should replace the incorrect one"] correct: String,
 ) -> PoiseResult {
-    let data_lock = ctx.serenity_context().data.read().await;
-    let data_lock = data_lock.get::<IssueData>().expect("data exists").clone();
-    let mut issues = data_lock.write().await;
+    let mut issues = ctx.data().issues.write().await;
     let issue = issues.create(ctx.author(), class, stage, incorrect, correct, &ctx.data().pool).await;
 
     ctx.data().issue_channel.send_message(ctx, CreateMessage::new()
