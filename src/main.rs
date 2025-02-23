@@ -206,7 +206,7 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
 
 pub fn get_asset(path: &str) -> Url {
     let url: Url = env::var("URL").expect("URL env variable").parse().expect("URL is valid");
-    url.join("assets").expect("path is valid").join(path).expect("path is valid")
+    url.join("assets/").expect("path is valid").join(path).expect("path is valid")
 }
 
 pub fn ordered<S, I>(iter: I) -> String

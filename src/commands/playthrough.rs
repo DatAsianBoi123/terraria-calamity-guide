@@ -64,7 +64,7 @@ async fn view(
             }, true)
             .field("Game Stage", playthrough.stage.name(), true)
             .color(Color::FOOYOO)
-            .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
+            .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url(crate::get_asset("gitgudpfp.jpg")))
             .timestamp(Timestamp::now())
         )
     ).await?;

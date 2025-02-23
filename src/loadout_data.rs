@@ -7,6 +7,7 @@ use multimap::MultiMap;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use poise::{ChoiceParameter, serenity_prelude::{CreateEmbed, User, Color, Timestamp, CreateEmbedAuthor, CreateEmbedFooter}};
+use reqwest::Url;
 use serde::Deserialize;
 use sqlx::{PgPool, prelude::FromRow};
 use thiserror::Error;
@@ -261,7 +262,7 @@ impl StageData {
             .field("<:weapons:1312528868074328074> Weapons", bulleted(&loadout.weapons), true)
             .field("<:equipment:1312528964866150471> Equipment", bulleted(&loadout.equipment), true)
             .color(Color::DARK_RED)
-            .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url("https://yt3.googleusercontent.com/lFmtL3AfqsklQGMSPcYf1JUwEZYji5rpq3qPtv1tOGGwvsg4AAT7yffTTN1Co74mbrZ4-M6Lnw=s176-c-k-c0x00ffffff-no-rj"))
+            .footer(CreateEmbedFooter::new("Loadouts by GitGudWO").icon_url(crate::get_asset("gitgudpfp.jpg")))
             .timestamp(Timestamp::now());
 
         if !loadout.extra.is_empty() {
@@ -384,27 +385,26 @@ impl Default for Stage {
 }
 
 impl Stage {
-    pub fn img(&self) -> String {
+    pub fn img(&self) -> Url {
         use Stage::*;
 
-        let s = match self {
-            PreBoss => "https://terraria.wiki.gg/images/a/a1/Map_Icon_Eye_of_Cthulhu_%28first_form%29.png",
-            PreEvil => "https://i.imgur.com/YozyRaq.png",
-            PreSkeletron => "https://terraria.wiki.gg/images/f/f4/Map_Icon_Skeletron.png",
-            PreMech => "https://terraria.wiki.gg/images/6/6f/Map_Icon_The_Destroyer.png",
-            PreWall => "https://terraria.wiki.gg/images/d/d4/Map_Icon_Wall_of_Flesh.png",
-            PrePlantera => "https://i.imgur.com/JPIVa0l.png",
-            PreGolem => "https://terraria.wiki.gg/images/b/b7/Map_Icon_Golem.png",
-            PreCultist => "https://terraria.wiki.gg/images/6/68/Map_Icon_Lunatic_Cultist.png",
-            PreMoonLord => "https://terraria.wiki.gg/images/8/82/Map_Icon_Moon_Lord.png",
-            PreProvidence => "https://calamitymod.wiki.gg/images/f/fb/Providence_map.png",
-            PrePolterghast => "https://calamitymod.wiki.gg/images/f/fc/Necroplasm_map.png",
-            PreDevourer => "https://calamitymod.wiki.gg/images/f/fb/Devourer_of_Gods_map.png",
-            PreYharon => "https://calamitymod.wiki.gg/images/7/70/Yharon_map.png",
-            PreDraedon => "https://i.imgur.com/KirWaB3.png",
-            Endgame => "https://calamitymod.wiki.gg/images/c/cb/Terminus.png",
-        };
-        s.to_string()
+        match self {
+            PreBoss => crate::get_asset("preboss.png"),
+            PreEvil => crate::get_asset("preevil.png"),
+            PreSkeletron => crate::get_asset("preskeletron.png"),
+            PreMech => crate::get_asset("premech.png"),
+            PreWall => crate::get_asset("prewall.png"),
+            PrePlantera =>  crate::get_asset("preplantera.png"),
+            PreGolem => crate::get_asset("pregolem.png"),
+            PreCultist => crate::get_asset("precultist.png"),
+            PreMoonLord => crate::get_asset("premoonlord.png"),
+            PreProvidence => crate::get_asset("preprovidence.png"),
+            PrePolterghast => crate::get_asset("prepolterghast.png"),
+            PreDevourer => crate::get_asset("predevourer.png"),
+            PreYharon => crate::get_asset("preyharon.png"),
+            PreDraedon => crate::get_asset("predraedon.png"),
+            Endgame => crate::get_asset("endgame.png"),
+        }
     }
 }
 
