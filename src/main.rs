@@ -100,7 +100,7 @@ impl Service for PoiseAxumService {
 async fn poise(
     #[shuttle_runtime::Secrets] secret_store: SecretStore,
     #[shuttle_shared_db::Postgres(
-        local_uri = "postgres://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb"
+        local_uri = "postgresql://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb?sslmode=require"
     )] pool: PgPool,
 ) -> Result<PoiseAxumService, shuttle_runtime::Error> {
     let token = secret_store.get("TOKEN").expect("TOKEN not found");
