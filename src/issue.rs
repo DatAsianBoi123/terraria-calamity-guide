@@ -13,6 +13,7 @@ type RawIssue = (i32, BigDecimal, i16, i16, String, String, NaiveDateTime);
 #[derive(Debug)]
 pub struct NoIssueFound(pub i32);
 
+#[derive(Default)]
 #[non_exhaustive]
 pub struct Issues {
     pub issues: HashMap<i32, Issue>,

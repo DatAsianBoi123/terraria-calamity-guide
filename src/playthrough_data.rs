@@ -49,6 +49,7 @@ pub enum ProgressError {
     LastStage,
 }
 
+#[derive(Default)]
 pub struct PlaythroughData {
     pub active_playthroughs: HashMap<UserId, Playthrough>,
     pub all_users: HashSet<UserId>,

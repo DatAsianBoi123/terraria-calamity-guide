@@ -38,6 +38,7 @@ struct RawExtraLoadoutData {
     data: Vec<String>,
 }
 
+#[derive(Default)]
 pub struct LoadoutData {
     loadouts: HashMap<Stage, StageData>,
 }
