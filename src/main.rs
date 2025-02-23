@@ -35,7 +35,7 @@ use shuttle_runtime::SecretStore;
 use sqlx::{PgPool, Executor};
 use tracing::info;
 
-use crate::{commands::{ping::ping, help::help, playthrough::playthrough}, playthrough_data::PlaythroughData};
+use crate::{commands::{ping::ping, help::help, playthrough::playthrough, wiki::wiki}, playthrough_data::PlaythroughData};
 
 mod web;
 mod loadout_data;
@@ -118,6 +118,7 @@ async fn poise(
                 playthrough(),
                 report(),
                 db(),
+                wiki(),
             ],
             event_handler: |ctx, event, framework, data| {
                 Box::pin(event_handler(ctx, event, framework, data))
