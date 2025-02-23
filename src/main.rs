@@ -2,9 +2,11 @@
 use axum::Router;
 use poise::serenity_prelude::{self as serenity, CreateInteractionResponse, CreateInteractionResponseMessage};
 
+use reqwest::Url;
 use tokio::net::TcpListener;
 use tokio::sync::RwLock;
 
+use std::env;
 use std::{fs, net::SocketAddr, sync::Arc, result::Result};
 
 use commands::{report::report, db::db, loadout::loadout, edit_loadout::edit_loadout};
@@ -103,6 +105,8 @@ async fn poise(
         local_uri = "postgresql://DatAsianBoi123:{secrets.NEON_PASS}@ep-rough-star-70439200.us-east-2.aws.neon.tech/neondb?sslmode=require"
     )] pool: PgPool,
 ) -> Result<PoiseAxumService, shuttle_runtime::Error> {
+    env::set_var("URL", secret_store.get("URL").expect("URL not found"));
+
     let token = secret_store.get("TOKEN").expect("TOKEN not found");
 
     let schema = fs::read_to_string("static/schema.sql").expect("file exists");
@@ -198,6 +202,11 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
     }
 
     Ok(())
+}
+
+pub fn get_asset(path: &str) -> Url {
+    let url: Url = env::var("URL").expect("URL env variable").parse().expect("URL is valid");
+    url.join("assets").expect("path is valid").join(path).expect("path is valid")
 }
 
 pub fn ordered<S, I>(iter: I) -> String
