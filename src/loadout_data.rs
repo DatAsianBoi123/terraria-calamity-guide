@@ -357,7 +357,7 @@ impl Display for PotionType {
     }
 }
 
-#[derive(Copy, Clone, Deserialize, Debug, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
+#[derive(Copy, Clone, Serialize, Deserialize, Debug, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
 pub enum Stage {
     #[name = "Pre-Bosses"]
     PreBoss,

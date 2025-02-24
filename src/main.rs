@@ -102,6 +102,7 @@ async fn poise(
     let issues = Arc::new(RwLock::new(Issues::default()));
 
     let loadouts_setup = loadouts.clone();
+    let playthroughs_setup = playthroughs.clone();
 
     let framework = poise::Framework::builder()
         .options(FrameworkOptions {
@@ -126,7 +127,7 @@ async fn poise(
                 ctx.set_presence(Some(ActivityData::playing("TModLoader")), OnlineStatus::Online);
 
                 *loadouts_setup.write().await = LoadoutData::load(&pool).await;
-                *playthroughs.write().await = PlaythroughData::load(&pool).await;
+                *playthroughs_setup.write().await = PlaythroughData::load(&pool).await;
                 *issues.write().await = Issues::load(&ctx.http, &pool).await;
 
                 let guild_id: u64 = secret_store.get("ISSUE_GUILD").and_then(|id| id.parse().ok()).expect("issue guild should be valid and exists");
@@ -139,7 +140,7 @@ async fn poise(
                 let issue_channel = channels.get(&channel_id).expect("channel exists");
 
                 let all_guilds = ctx.cache.guild_count();
-                info!("loaded {} playthroughs", playthroughs.read().await.active_playthroughs.len());
+                info!("loaded {} playthroughs", playthroughs_setup.read().await.active_playthroughs.len());
                 info!("loaded {} issues", issues.read().await.issues.len());
                 info!("helping playthroughs in {} guilds", all_guilds);
                 info!("ready! logged in as {}", ready.user.tag());
@@ -148,7 +149,7 @@ async fn poise(
                     issue_channel: issue_channel.clone(),
 
                     loadouts: loadouts_setup,
-                    playthroughs,
+                    playthroughs: playthroughs_setup,
                     issues,
                 })
             })
@@ -159,7 +160,7 @@ async fn poise(
         .framework(framework)
         .await.expect("create client");
 
-    Ok(PoiseAxumService { poise: client, axum: web::app(loadouts.clone()) })
+    Ok(PoiseAxumService { poise: client, axum: web::app(loadouts, playthroughs) })
 }
 
 async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> PoiseResult {

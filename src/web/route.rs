@@ -17,3 +17,10 @@ pub async fn loadout(Path((class, stage)): Path<(CalamityClass, Stage)>, State(l
         .unwrap_or(StatusCode::NOT_FOUND.into_response())
 }
 
+pub async fn playthrough(Path(id): Path<UserId>, State(playthroughs): State<Arc<RwLock<PlaythroughData>>>) -> Response {
+    let playthroughs = playthroughs.read().await;
+    playthroughs.active_playthroughs.get(&id)
+        .map(|playthrough| Json(playthrough).into_response())
+        .unwrap_or(StatusCode::NOT_FOUND.into_response())
+}
+

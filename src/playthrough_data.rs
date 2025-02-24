@@ -3,6 +3,7 @@ use std::{collections::{HashMap, HashSet}, vec::Vec, convert::Into};
 use multimap::MultiMap;
 use num_traits::{FromPrimitive, ToPrimitive};
 use poise::serenity_prelude::{UserId, User};
+use serde::Serialize;
 use sqlx::{PgPool, types::{BigDecimal, chrono::{NaiveDateTime, Utc}}};
 use tracing::info;
 
@@ -235,6 +236,7 @@ impl PlaythroughData {
     }
 }
 
+#[derive(Serialize)]
 pub struct Playthrough {
     pub owner: UserId,
     pub players: Vec<Player>,
@@ -242,7 +244,7 @@ pub struct Playthrough {
     pub started: Option<NaiveDateTime>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct Player {
     pub user_id: UserId,
     pub class: CalamityClass,
