@@ -97,6 +97,12 @@ async fn poise(
     let schema = fs::read_to_string("static/schema.sql").expect("file exists");
     pool.execute(&schema[..]).await.map_err(CustomError::new)?;
 
+    let loadouts = Arc::new(RwLock::new(LoadoutData::default()));
+    let playthroughs = Arc::new(RwLock::new(PlaythroughData::default()));
+    let issues = Arc::new(RwLock::new(Issues::default()));
+
+    let loadouts_setup = loadouts.clone();
+
     let framework = poise::Framework::builder()
         .options(FrameworkOptions {
             commands: vec![
@@ -119,9 +125,9 @@ async fn poise(
                 register_globally(ctx, &framework.options().commands).await?;
                 ctx.set_presence(Some(ActivityData::playing("TModLoader")), OnlineStatus::Online);
 
-                let loadouts = LoadoutData::load(&pool).await;
-                let playthroughs = PlaythroughData::load(&pool).await;
-                let issues = Issues::load(&ctx.http, &pool).await;
+                *loadouts_setup.write().await = LoadoutData::load(&pool).await;
+                *playthroughs.write().await = PlaythroughData::load(&pool).await;
+                *issues.write().await = Issues::load(&ctx.http, &pool).await;
 
                 let guild_id: u64 = secret_store.get("ISSUE_GUILD").and_then(|id| id.parse().ok()).expect("issue guild should be valid and exists");
                 let guild_id = GuildId::from(guild_id);
@@ -133,17 +139,17 @@ async fn poise(
                 let issue_channel = channels.get(&channel_id).expect("channel exists");
 
                 let all_guilds = ctx.cache.guild_count();
-                info!("loaded {} playthroughs", playthroughs.active_playthroughs.len());
-                info!("loaded {} issues", issues.issues.len());
+                info!("loaded {} playthroughs", playthroughs.read().await.active_playthroughs.len());
+                info!("loaded {} issues", issues.read().await.issues.len());
                 info!("helping playthroughs in {} guilds", all_guilds);
                 info!("ready! logged in as {}", ready.user.tag());
                 Ok(Data {
                     pool,
                     issue_channel: issue_channel.clone(),
 
-                    loadouts: Arc::new(RwLock::new(loadouts)),
-                    playthroughs: Arc::new(RwLock::new(playthroughs)),
-                    issues: Arc::new(RwLock::new(issues)),
+                    loadouts: loadouts_setup,
+                    playthroughs,
+                    issues,
                 })
             })
         })
@@ -153,7 +159,7 @@ async fn poise(
         .framework(framework)
         .await.expect("create client");
 
-    Ok(PoiseAxumService { poise: client, axum: web::app() })
+    Ok(PoiseAxumService { poise: client, axum: web::app(loadouts.clone()) })
 }
 
 async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: FrameworkContext<'_, Data, Error>, data: &Data) -> PoiseResult {

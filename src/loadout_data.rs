@@ -244,6 +244,23 @@ impl LoadoutData {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct FullLoadout<'a> {
+    pub potion: PotionType,
+    pub powerups: Option<&'a Vec<Powerup>>,
+    pub armor: &'a str,
+    pub weapons: &'a [String; 4],
+    pub equipment: &'a Vec<String>,
+    pub extra: &'a LinkedHashMap<String, Vec<String>>,
+}
+
+impl<'a> FullLoadout<'a> {
+    pub fn new(StageData { potion, powerups, loadouts }: &'a StageData, class: CalamityClass) -> Option<Self> {
+        let Loadout { armor, weapons, equipment, extra, .. } = loadouts.get(&class)?;
+        Some(Self { potion: *potion, powerups: powerups.as_ref(), armor, weapons, equipment, extra })
+    }
+}
+
 #[derive(Deserialize)]
 pub struct StageData {
     pub potion: PotionType,
@@ -282,7 +299,7 @@ impl StageData {
 
 }
 
-#[derive(Clone, Copy, Deserialize, Debug, sqlx::Type)]
+#[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Debug, sqlx::Type)]
 #[sqlx(type_name = "powerup")]
 pub enum Powerup {
     LifeCrystal,
@@ -323,7 +340,7 @@ impl Display for Powerup {
     }
 }
 
-#[derive(Clone, Copy, Deserialize, Debug, sqlx::Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "health_potion")]
 pub enum PotionType {
     Lesser,
@@ -409,7 +426,7 @@ impl Stage {
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, Hash, PartialEq, Eq, ChoiceParameter, FromPrimitive)]
 pub enum CalamityClass {
     Melee,
     Ranger,
@@ -436,9 +453,8 @@ impl CalamityClass {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Deserialize, Clone)]
 pub struct Loadout {
-    #[serde(skip_serializing)]
     pub id: Option<i32>,
     pub armor: String,
     pub weapons: [String; 4],
