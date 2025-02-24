@@ -13,6 +13,9 @@ class Particle {
     this.x += this.velocity[0] * delta;
     this.y += this.velocity[1] * delta;
 
+    this.velocity[0] -= (this.velocity[0] - this.initialVel[0]) * 0.01;
+    this.velocity[1] -= (this.velocity[1] - this.initialVel[1]) * 0.01;
+
     if (this.x < -5) this.x = particleCanvas.width + 5;
     else if (this.x > particleCanvas.width + 5) this.x = -5;
 
@@ -26,17 +29,10 @@ class Particle {
 
     if (mag == 0) return;
 
-    let newMag = Math.pow(2, mag / -20 - 1);
+    let newMag = Math.pow(1.5 / mag, 2);
 
-    if (mag > 500) {
-      this.velocity[0] -= (this.velocity[0] - this.initialVel[0]) * 0.01;
-      this.velocity[1] -= (this.velocity[1] - this.initialVel[1]) * 0.01;
-
-      return;
-    }
-
-    dir[0] *= newMag / mag;
-    dir[1] *= newMag / mag;
+    dir[0] *= newMag;
+    dir[1] *= newMag;
 
     this.velocity[0] += dir[0];
     this.velocity[1] += dir[1];
