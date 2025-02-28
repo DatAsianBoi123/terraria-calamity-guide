@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="title">Loadout</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <h1 id="loading-text">Loading...</h1>
+  </div>
+
+  <div class="body" id="body" style="display: none;">
+    <div class="heading">
+      <a href="/" class="icon"><img src="/assets/icon.png" alt="icon"></a>
+
+      <div class="divider"></div>
+
+      <h1 id="class"></h1>
+      <h1>—</h1>
+      <img id="stage-img" alt="Boss">
+      <h1 id="stage"></h1>
+    </div>
+
+    <div class="loadout">
+      <div class="item armor">
+        <div class="label">
+          <h2>Armor</h2>
+        </div>
+        <div class="value">
+          <p class="value" id="armor"></p>
+        </div>
+      </div>
+      <div class="item potion">
+        <div class="label">
+          <h2>Potion</h2>
+        </div>
+        <div class="value">
+          <p id="potion"></p>
+        </div>
+      </div>
+      <div class="item powerups">
+        <div class="label">
+          <h2>Powerups</h2>
+        </div>
+        <div class="value">
+          <ul id="powerups"></ul>
+        </div>
+      </div>
+      <div class="item weapons">
+        <div class="label">
+          <h2>Weapons</h2>
+        </div>
+        <div class="value">
+          <ul id="weapons"></ul>
+        </div>
+      </div>
+      <div class="item equipment">
+        <div class="label">
+          <h2>Equipment</h2>
+        </div>
+        <div class="value">
+          <ul id="equipment"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

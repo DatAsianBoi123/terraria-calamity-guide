@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Kanit&display=swap');
+
+:root {
+  --main-color: #17151C;
+  --secondary-color: #2D2931;
+  --heading-color: white;
+  --accent-color: #8734ed;
+  --text-color: #ddd;
+}
+
+::-webkit-scrollbar {
+  scrollbar-width: thin;
+}
+
+* {
+  margin: 0;
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+}
+
+html, body {
+  background-color: var(--secondary-color);
+  height: 100%;
+}
+
+h1, h2, h3 {
+  font-family: 'Kanit', serif;
+  color: var(--heading-color);
+}
+
+strong {
+  color: var(--heading-color);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3em;
+  height: 100%;
+}
+
+.loading h1 {
+  padding: 30px;
+  margin: 50px;
+}
+
+.loading h1.error {
+  background-color: rgba(222, 22, 22, 0.3);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+div.heading {
+  display: flex;
+  background-color: var(--main-color);
+  padding: 30px;
+  height: 2.4em;
+  align-items: center;
+  gap: 10px;
+}
+
+div.heading h1 {
+  margin: 0;
+  font-size: 2.4em;
+}
+
+div.heading img {
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+div.heading a.icon {
+  height: 140%;
+}
+
+div.heading a.icon img {
+  height: 100%;
+  clip-path: circle();
+  image-rendering: auto;
+}
+
+div.heading div.divider {
+  height: 110%;
+  border: 2px solid var(--secondary-color);
+  border-radius: 32px;
+  margin: 0 15px;
+}
+
+div.loadout {
+  display: grid;
+  background-color: var(--secondary-color);
+  padding: 10px;
+  flex-grow: 1;
+  overflow: auto;
+  grid-template-columns: repeat(6, minmax(0, 0.5fr));
+  grid-template-rows: 2fr 1fr;
+  grid-auto-rows: 1fr;
+  grid-auto-flow: dense;
+  grid-template-areas: 
+    'armor armor weapons weapons equipment equipment'
+    'potion powerups weapons weapons equipment equipment';
+  gap: 10px;
+}
+
+div.loadout div.item  {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+div.loadout div.item div.label {
+  background-color: rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-size: 1.2em;
+  padding: 20px;
+  border-bottom: 1px solid var(--accent-color);
+}
+
+div.loadout div.item div.value {
+  padding: 20px;
+  flex-grow: 1;
+  font-size: 1.3em;
+  min-height: 0;
+  overflow: visible;
+}
+
+div.loadout div.item div.value ul {
+  display: flex;
+  padding-left: 0;
+  height: 100%;
+  list-style-type: none;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+}
+
+div.loadout div.item div.value ul li {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.02);
+  align-items: center;
+  flex-grow: 1;
+  min-height: 0;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+div.loadout div.item.armor {
+  grid-area: armor;
+}
+
+div.loadout div.item.potion {
+  grid-area: potion;
+}
+
+div.loadout div.item.powerups {
+  grid-area: powerups;
+}
+
+div.loadout div.item.weapons {
+  grid-area: weapons;
+}
+
+div.loadout div.item.weapons div.value ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+div.loadout div.item.weapons div.value ul li {
+  justify-content: center;
+  text-align: center;
+}
+
+div.loadout div.item.equipment {
+  grid-area: equipment;
+}
+
