@@ -36,7 +36,7 @@ strong {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.3em;
+  font-size: 1.3rem;
   height: 100%;
 }
 
@@ -59,14 +59,14 @@ div.heading {
   display: flex;
   background-color: var(--main-color);
   padding: 30px;
-  height: 2.4em;
+  height: 2.4rem;
   align-items: center;
   gap: 10px;
 }
 
 div.heading h1 {
   margin: 0;
-  font-size: 2.4em;
+  font-size: 2.4rem;
 }
 
 div.heading img {
@@ -118,7 +118,7 @@ div.loadout div.item  {
 div.loadout div.item div.label {
   background-color: rgba(0, 0, 0, 0.2);
   text-align: center;
-  font-size: 1.2em;
+  font-size: 1.2rem;
   padding: 20px;
   border-bottom: 1px solid var(--accent-color);
 }
@@ -126,7 +126,7 @@ div.loadout div.item div.label {
 div.loadout div.item div.value {
   padding: 20px;
   flex-grow: 1;
-  font-size: 1.3em;
+  font-size: 1.3rem;
   min-height: 0;
   overflow: visible;
 }
