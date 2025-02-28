@@ -11,7 +11,7 @@ use std::{fs, net::SocketAddr, sync::Arc, result::Result};
 
 use commands::{report::report, db::db, loadout::loadout, edit_loadout::edit_loadout};
 use issue::{Issues, NoIssueFound};
-use loadout_data::LoadoutData;
+use loadout_data::{CalamityClass, LoadoutData, Stage};
 use poise::{
     samples::register_globally,
     FrameworkOptions,
@@ -191,9 +191,20 @@ async fn event_handler(ctx: &serenity::Context, event: &FullEvent, _framework: F
     Ok(())
 }
 
+pub fn url() -> Url {
+    env::var("URL").expect("URL env variable").parse().expect("URL is valid")
+}
+
 pub fn get_asset(path: &str) -> Url {
-    let url: Url = env::var("URL").expect("URL env variable").parse().expect("URL is valid");
-    url.join("assets/").expect("path is valid").join(path).expect("path is valid")
+    url().join("assets/").expect("path is valid").join(path).expect("path is valid")
+}
+
+pub fn get_loadout_url(class: CalamityClass, stage: Stage) -> Url {
+    let mut url = url().join("loadout/").expect("path is valid");
+    url.query_pairs_mut()
+        .append_pair("class", &class.to_string())
+        .append_pair("stage", &format!("{stage:?}"));
+    url
 }
 
 pub fn ordered<S, I>(iter: I) -> String

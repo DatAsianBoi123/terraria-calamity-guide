@@ -256,6 +256,7 @@ impl StageData {
         let loadout = self.loadouts.get(&class).expect("loadout exists for stage");
         let mut embed = CreateEmbed::new();
         embed = embed
+            .url(crate::get_loadout_url(class, stage))
             .title(format!("{} - {}", class.name(), stage.name()))
             .author(CreateEmbedAuthor::new(&author.name).icon_url(author.avatar_url().unwrap_or_default()))
             .thumbnail(stage.img())
