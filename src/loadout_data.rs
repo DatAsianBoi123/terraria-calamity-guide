@@ -244,23 +244,6 @@ impl LoadoutData {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-pub struct FullLoadout<'a> {
-    pub potion: PotionType,
-    pub powerups: Option<&'a Vec<Powerup>>,
-    pub armor: &'a str,
-    pub weapons: &'a [String; 4],
-    pub equipment: &'a Vec<String>,
-    pub extra: &'a LinkedHashMap<String, Vec<String>>,
-}
-
-impl<'a> FullLoadout<'a> {
-    pub fn new(StageData { potion, powerups, loadouts }: &'a StageData, class: CalamityClass) -> Option<Self> {
-        let Loadout { armor, weapons, equipment, extra, .. } = loadouts.get(&class)?;
-        Some(Self { potion: *potion, powerups: powerups.as_ref(), armor, weapons, equipment, extra })
-    }
-}
-
 #[derive(Deserialize)]
 pub struct StageData {
     pub potion: PotionType,
