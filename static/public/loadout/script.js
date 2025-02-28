@@ -42,6 +42,7 @@ function init(data) {
   document.getElementById('class').innerText = data.class;
   document.getElementById('stage').innerText = data.stage;
   document.getElementById('stage-img').src = data.stage_img;
+  document.getElementById('class-img').src = `/assets/emoji/${calamityClass.toLowerCase()}.png`;
 
   document.getElementById('potion').innerText = data.potion;
 
@@ -58,13 +59,52 @@ function init(data) {
   document.getElementById('armor').innerText = data.armor;
   appendListElements(document.getElementById('weapons'), data.weapons);
   appendListElements(document.getElementById('equipment'), data.equipment);
+
+  handleExtra(data.extra);
 }
 
 /**
-  * @param {Element} ol 
+  * @param {{ [key: string]: string[] }} extra 
+  */
+function handleExtra(extra) {
+  const totalExtra = Object.keys(extra).length;
+  let spacesLeft = 3;
+
+  for (const [title, values] of Object.entries(extra)) {
+    const loadout = document.getElementById('loadout');
+
+    const item = document.createElement('div');
+    item.classList.add('item');
+    item.style.gridRow = `span ${Math.ceil(spacesLeft / totalExtra)}`;
+
+    const label = document.createElement('div');
+    label.classList.add('label');
+
+    const h2 = document.createElement('h2');
+    h2.innerText = title;
+
+    label.appendChild(h2);
+    item.appendChild(label);
+
+    const value = document.createElement('div');
+    value.classList.add('value');
+
+    const ul = document.createElement('ul');
+    appendListElements(ul, values);
+
+    value.appendChild(ul);
+    item.appendChild(value);
+    loadout.appendChild(item);
+
+    spacesLeft--;
+  }
+}
+
+/**
+  * @param {Element} ul 
   * @param {string[]?} elements 
   */
-function appendListElements(ol, elements) {
+function appendListElements(ul, elements) {
   if (!elements) return;
 
   for (let element of elements) {
@@ -79,7 +119,7 @@ function appendListElements(ol, elements) {
 
     li.appendChild(p);
 
-    ol.appendChild(li);
+    ul.appendChild(li);
   }
 }
 

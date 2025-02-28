@@ -32,6 +32,10 @@ strong {
   color: var(--heading-color);
 }
 
+img.pixel {
+  image-rendering: pixelated;
+}
+
 .loading {
   display: flex;
   justify-content: center;
@@ -71,7 +75,6 @@ div.heading h1 {
 
 div.heading img {
   height: 100%;
-  image-rendering: pixelated;
 }
 
 div.heading a.icon {
@@ -81,7 +84,6 @@ div.heading a.icon {
 div.heading a.icon img {
   height: 100%;
   clip-path: circle();
-  image-rendering: auto;
 }
 
 div.heading div.divider {
@@ -97,11 +99,13 @@ div.loadout {
   padding: 10px;
   flex-grow: 1;
   overflow: auto;
-  grid-template-columns: repeat(6, minmax(0, 0.5fr));
-  grid-template-rows: 2fr 1fr;
-  grid-auto-rows: 1fr;
-  grid-auto-flow: dense;
+  grid-template-columns: repeat(6, 0.5fr);
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-auto-columns: 0.5fr;
+  grid-auto-rows: minmax(0, 1fr);
+  grid-auto-flow: column;
   grid-template-areas: 
+    'armor armor weapons weapons equipment equipment'
     'armor armor weapons weapons equipment equipment'
     'potion powerups weapons weapons equipment equipment';
   gap: 10px;
@@ -116,11 +120,22 @@ div.loadout div.item  {
 }
 
 div.loadout div.item div.label {
+  display: flex;
   background-color: rgba(0, 0, 0, 0.2);
-  text-align: center;
   font-size: 1.2rem;
-  padding: 20px;
+  padding: 15px;
   border-bottom: 1px solid var(--accent-color);
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+div.loadout div.item div.label h2 {
+  text-align: center;
+}
+
+div.loadout div.item div.label img {
+  height: 75%;
 }
 
 div.loadout div.item div.value {
@@ -146,7 +161,6 @@ div.loadout div.item div.value ul li {
   background-color: rgba(255, 255, 255, 0.02);
   align-items: center;
   flex-grow: 1;
-  min-height: 0;
   padding: 20px;
   border-radius: 15px;
 }
