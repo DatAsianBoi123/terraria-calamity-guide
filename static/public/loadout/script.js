@@ -68,12 +68,16 @@ function appendListElements(ol, elements) {
   if (!elements) return;
 
   for (let element of elements) {
+    // TODO: probably don't need regex here
     element = element.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     element = element.replace(/\*(.+?)\*/g, '<i>$1</i>');
 
     const li = document.createElement('li');
-    // TODO: probably don't need regex here
-    li.innerHTML = element;
+
+    const p = document.createElement('p');
+    p.innerHTML = element;
+
+    li.appendChild(p);
 
     ol.appendChild(li);
   }
