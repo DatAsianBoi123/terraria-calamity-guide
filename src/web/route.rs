@@ -7,7 +7,7 @@ use reqwest::Url;
 use serde::Serialize;
 use tokio::sync::RwLock;
 
-use crate::{loadout_data::{CalamityClass, Loadout, LoadoutData, PotionType, Powerup, Stage, StageData}, playthrough_data::PlaythroughData};
+use crate::{loadout_data::{CalamityClass, Loadout, LoadoutData, Stage, StageData}, playthrough_data::PlaythroughData};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 struct ApiLoadout<'a> {
@@ -15,8 +15,8 @@ struct ApiLoadout<'a> {
     pub stage: String,
     pub stage_img: Url,
 
-    pub potion: PotionType,
-    pub powerups: Option<&'a Vec<Powerup>>,
+    pub potion: String,
+    pub powerups: Option<Vec<String>>,
     pub armor: &'a str,
     pub weapons: &'a [String; 4],
     pub equipment: &'a Vec<String>,
@@ -26,13 +26,14 @@ struct ApiLoadout<'a> {
 impl<'a> ApiLoadout<'a> {
     pub fn new(StageData { potion, powerups, loadouts }: &'a StageData, class: CalamityClass, stage: Stage) -> Option<Self> {
         let Loadout { armor, weapons, equipment, extra, .. } = loadouts.get(&class)?;
+        let powerups = powerups.as_ref().map(|powerups| powerups.iter().map(|powerup| powerup.to_string()).collect());
         Some(Self {
             class: class.to_string(),
             stage: stage.to_string(),
             stage_img: stage.img(),
 
-            potion: *potion,
-            powerups: powerups.as_ref(),
+            potion: potion.to_string(),
+            powerups,
             armor,
             weapons,
             equipment,
